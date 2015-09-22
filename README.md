@@ -49,7 +49,7 @@ j_header_http = {
 - crear una instancia de la clase TodoPago
 
 ```python
-tpc = TodoPagoConnector(j_header_http, j_wsdls, 'https://developers.todopago.com.ar/services/')
+tpc = TodoPagoConnector(j_header_http, j_wsdls, 'https://developers.todopago.com.ar/')
 
 ```		
 		

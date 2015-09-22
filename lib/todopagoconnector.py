@@ -2,12 +2,19 @@
 from suds.client import Client
 
 #############################################
+ver= '1.0.1'
+soapAppend = 'services/'
+restAppend = 'api/'
+tenant = 't/1.1/'
+soapAthorizeAppend = 'Authorize'
+
+#############################################
 
 class TodoPagoConnector:
 	def __init__(self, http_header, wsdls, end_point):
 		self._http_header = http_header
 		self._wsdls = wsdls
-		self._end_point = end_point
+		self._end_point = end_point + soapAppend + tenant 
 	
 	######################################################################################	
 	###Methodo publico que llama a la primera funcion del servicio SendAuthorizeRequest###
