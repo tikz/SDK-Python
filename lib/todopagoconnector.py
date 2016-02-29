@@ -192,7 +192,7 @@ class TodoPagoConnector:
 	def _parse_rest_params(self, params):
 		url = ''
 		for param in params:
-			url += "/"+param[0]+"/"+param[1]
+			url += "/"+param[0]+"/"+param[1] #param[0] tendra la key y param [1] el value
 		return url
 
 	def _parse_rest_response(self, response):

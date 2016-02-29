@@ -227,7 +227,7 @@ options = {
 "Merchant" : "35", #Merchant o Nro de comercio asignado por TodoPago
 "AuthorizationKey" : "6d2589f2-37e6-1334-7565-3dc19404480c" #AuthorizationKey devuelto como respuesta del servicio GetAuthorizeAnswer
 }
-resp = tpc->voidRequest(options)	
+resp = tpc.voidRequest(options)	
 ```
 
 #### Devoluciones
@@ -241,7 +241,7 @@ options = {
 "RequestKey" : "6d2589f2-37e6-1334-7565-3dc19404480c" #RequestKey devuelto como respuesta del servicio SendAutorizeRequest
 "AMOUNT" : "23.50" #Opcional. Monto a devolver, si no se envía, se trata de una devolución total
 }
-resp = tpc->returnRequest(options)
+resp = tpc.returnRequest(options)
 ```
 
 También se puede llamar al método ```returnRequest``` de la esta otra manera:
@@ -253,7 +253,7 @@ options = {
 "AuthorizationKey" : "6d2589f2-37e6-1334-7565-3dc19404480c" #AuthorizationKey devuelto como respuesta del servicio GetAuthorizeAnswer
 "AMOUNT" : "23.50" #Opcional. Monto a devolver, si no se envía, se trata de una devolución total
 }
-resp = tpc->returnRequest(options)	
+resp = tpc.returnRequest(options)	
 ```
 
 #### Respuesta de los servicios
