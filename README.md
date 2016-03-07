@@ -82,15 +82,18 @@ optionsSAR_operacion = {
 "MERCHANT": "2153",
 "OPERATIONID": "8000",
 "CURRENCYCODE": "032",
-"AMOUNT": "1.00",
+"AMOUNT": "1.00"
+}
+```
 
+<!--
 #Optionals
 "AVAILABLEPAYMENTMETHODSIDS": "1#194#43#45",
 "PUSHNOTIFYMETHOD" : "",
 "PUSHNOTIFYENDPOINT": "",  
 "PUSHNOTIFYSTATES": ""
 }
-```
+```-->
 La variable <strong>response</strong> contendrá una estuctura en la cual <strong>url_request</strong> nos dara la url del formulario de pago a la cual habra que redirigir al comprador y <strong>request_key</strong> será un datos que será requerido en el paso de la confirmación de la transacción a través del método <strong>getAuthorizeRequest</strong>
 
 ####3.Confirmación de transacción.		
