@@ -5,7 +5,7 @@ warnings.simplefilter('always')
 
 optionsSAR_comercio = {
 "Session": "ABCDEF-1234-12221-FDE1-00000200",
-"Security": "1234567890ABCDEF1234567890ABCDEF",
+"Security": "15406018567890AB40E46ABD10E",
 "EncodingMethod": "XML",
 "URL_OK": "http,//someurl.com/ok/",
 "URL_ERROR": "http,//someurl.com/fail/",
@@ -13,7 +13,7 @@ optionsSAR_comercio = {
 }
 
 optionsSAR_operacion = {
-"MERCHANT": "2153",
+"MERCHANT": "2266",
 "OPERATIONID": "06",
 "CURRENCYCODE": "032",
 "AMOUNT": "54",
@@ -85,27 +85,27 @@ optionsGAA = {
 }
 
 optionsRR = {
-'Security': '1540601877EB2059EF50240E46ABD10E',
-'Merchant' : '2153',
+'Security': '1540601877567890AB240E46ABD10E',
+'Merchant' : '2266',
 'RequestKey': 'c98617da-8536-51b4-41ae-859e8037d7ab',
 'AMOUNT' : '1'
 }
 
 optionsVR = {
-'Security': '1540601877EB2059EF50240E46ABD10E',
-'Merchant' : '2866',
+'Security': '1540567890AB59EF50240E46ABD10E',
+'Merchant' : '2266',
 'RequestKey': 'c98617da-8536-51b4-41ae-859e8037d7ab'
 }
 optionsGAPM = {
 'MERCHANT': '2153'
 }
 optionsGS = {
-'MERCHANT': '2153',
-'OPERATIONID': '204'
+'MERCHANT': '2658',
+'OPERATIONID': '8000'
 }
 
 optionsGBRDT = {
-'MERCHANT': '2153',
+'MERCHANT': '2866',
 'STARTDATE': '2015-11-01',
 'ENDDATE': '2015-12-10',
 'PAGENUMBER': '1'
@@ -118,6 +118,11 @@ j_header_http = {
 j_wsdls = {
 'Operations': 'Operations',
 'Authorize': 'Authorize'
+}
+
+userCredenciales = {
+'USUARIO': "usuario@todopago.com",
+'CLAVE': "contrasena"
 }
 
 tpc = TodoPagoConnector(j_header_http, "test")
@@ -133,3 +138,6 @@ print tpc.getByOperationId(optionsGS)
 print "\n\r ------------------------------------ "
 print tpc.getByRangeDateTime(optionsGBRDT)
 print "\n\r ------------------------------------ "
+print tpc.getCredentials(userCredenciales)
+print "\n\r ------------------------------------ "
+
