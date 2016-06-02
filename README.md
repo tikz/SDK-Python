@@ -37,7 +37,7 @@ ej: pip install suds-jurko <-- instalar la dependencia
 La versión implementada de la SDK, esta testeada para versiones desde Python 2.7 en adelante. 
 
 <a name="general"></a>
-##Genaralidades
+##Generalidades
 Esta versión soporta únicamente pago en moneda nacional argentina (CURRENCYCODE = 32).
 Todos los métodos devuelven la respuesta en forma de diccionario.
 [<sub>Volver a inicio</sub>](#inicio)
