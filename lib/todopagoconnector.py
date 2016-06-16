@@ -3,6 +3,7 @@ from suds.client import Client
 import requests
 import os.path, sys, urllib, urlparse, warnings, copy, json
 from user import User
+from utils.fraudcontrolvalidation import FraudControlValidation
 
 def deprecated(func):
 	"""This is a decorator which can be used to mark functions
@@ -19,7 +20,7 @@ def deprecated(func):
 	return newFunc
 
 
-ver= '1.2.0'
+ver= '1.3.0'
 soapAppend = 'services/'
 restAppend = 'api/'
 tenant = 't/1.1/'
@@ -213,7 +214,10 @@ class TodoPagoConnector:
 				diccionario["LENGUAGEVERSION"]=sys.version()
 			except Exception, err2:
 				diccionario["LENGUAGEVERSION"]="version unknown"
-
+		
+		validador = FraudControlValidation(diccionario)
+		diccionario =  validador.validate()
+		
 		xmlpayload = "<Request>"
 		for key in diccionario:
 			xmlpayload += "<"+key+">"+diccionario[key]+"</"+key+">"
