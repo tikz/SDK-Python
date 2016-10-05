@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #pip install suds-jurko
 from suds.client import Client
 import requests
@@ -20,7 +21,7 @@ def deprecated(func):
 	return newFunc
 
 
-ver= '1.3.0'
+ver= '1.4.0'
 soapAppend = 'services/'
 restAppend = 'api/'
 tenant = 't/1.1/'
@@ -215,8 +216,8 @@ class TodoPagoConnector:
 			except Exception, err2:
 				diccionario["LENGUAGEVERSION"]="version unknown"
 		
-		validador = FraudControlValidation(diccionario)
-		diccionario =  validador.validate()
+		#validador = FraudControlValidation(diccionario)
+		#diccionario =  validador.validate()
 		
 		xmlpayload = "<Request>"
 		for key in diccionario:

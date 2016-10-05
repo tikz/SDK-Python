@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class Validation:
     TODOPAGO_JSON_VALIDATION=[
 	{

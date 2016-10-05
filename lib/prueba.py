@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 from todopagoconnector import TodoPagoConnector
 import os.path, sys, urllib, urlparse, warnings
 from utils.fraudcontrolvalidation import FraudControlValidation
-import json  
+import json
 
 
 warnings.simplefilter('always')
@@ -96,4 +97,15 @@ j_wsdls = {
 
 
 tpc = TodoPagoConnector(j_header_http, "test")
-print (tpc.sendAuthorize(optionsSAR_comercio, optionsSAR_operacion))
+
+result = tpc.sendAuthorize(optionsSAR_comercio, optionsSAR_operacion)
+
+encoding = sys.stdout.encoding
+if (encoding is None):
+	encoding = "cp850"
+for k, val in result.iteritems():
+	if (isinstance(val, int)):
+		strval = str(val)
+		print(k + " : " + strval.encode(encoding))
+	else:
+		print(k + " : " + val.encode(encoding))
