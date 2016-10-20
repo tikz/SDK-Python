@@ -5,7 +5,6 @@
 		<script src="https://developers.todopago.com.ar/resources/TPHybridForm-v0.1.js"></script>
 		<link rel="stylesheet" type="text/css" href="styles.css">
 		<script type="text/javascript">
-
 		</script>
 	</head>
 	<body class="contentContainer">
@@ -52,6 +51,7 @@
 				</div>
 				<div id="tp-bt-wrapper">
 					<button id="MY_btnConfirmarPago" class="tp-button"/>
+					<button id="MY_btnPagarConBilletera" class="tp-button"/>
 				</div>
 			</div>	
 		</div>
@@ -70,6 +70,7 @@
 			callbackValidationErrorFunction: 'validationCollector',
             callbackCustomSuccessFunction: 'customPaymentSuccessResponse',
             callbackCustomErrorFunction: 'customPaymentErrorResponse',
+            callbackBilleteraFunction: 'billeteraPaymentResponse',
             botonPagarId: 'MY_btnConfirmarPago',
             botonPagarConBilleteraId: 'MY_btnPagarConBilletera',
             modalCssClass: 'modal-class',

@@ -91,12 +91,78 @@ optionsSAR_operacion debe ser un diccionario con la siguiente estructura:
 		
 ```python
 optionsSAR_operacion = {
-"MERCHANT": "2153",
-"OPERATIONID": "8000",
+"MERCHANT": "2866",
+"OPERATIONID": "06",
 "CURRENCYCODE": "032",
-"AMOUNT": "1.00"
+"AMOUNT": "54",
+"MININSTALLMENTS": "3",
+"MAXINSTALLMENTS": "6",
+"CSBTCITY": "Villa General Belgrano",
+"CSSTCITY": "Villa General Belgrano",
+"CSMDD6" : "",
+"CSBTCOUNTRY": "AR",
+"CSSTCOUNTRY": "AR",
+
+"CSBTEMAIL": "todopago@hotmail.com",
+"CSSTEMAIL": "todopago@hotmail.com",
+
+"CSBTFIRSTNAME": "Juan",
+"CSSTFIRSTNAME": "Juan",
+
+"CSBTLASTNAME": "Perez",
+"CSSTLASTNAME": "Perez",
+
+"CSBTPHONENUMBER": "541160913988",
+"CSSTPHONENUMBER": "541160913988",
+
+"CSBTPOSTALCODE": "1010",
+"CSSTPOSTALCODE": "1010",
+
+"CSBTSTATE": "B",
+"CSSTSTATE": "B",
+
+"CSBTSTREET1": "Cerrito 740",
+"CSSTSTREET1": "Cerrito 740",
+
+
+"CSBTSTREET2": "Cerrito 740",
+"CSSTSTREET2": "Cerrito 740",
+
+"CSBTCUSTOMERID": "453458",
+"CSBTIPADDRESS": "192.0.0.4",
+"CSPTCURRENCY": "ARS",
+"CSPTGRANDTOTALAMOUNT": "125.38",
+"CSMDD7": "",
+"CSMDD8": "Y",
+"CSMDD9": "",
+"CSMDD10": "",
+"CSMDD11": "",
+"STCITY": "rosario",
+"STCOUNTRY": "",
+"STEMAIL": "jose@gmail.com",
+"STFIRSTNAME": "Jose",
+"STLASTNAME": "Perez",
+"STPHONENUMBER": "541155893737",
+"STPOSTALCODE": "1414",
+"STSTATE": "D",
+"STSTREET1": "San Martin 123",
+"CSMDD12": "", 
+"CSMDD13": "", 
+"CSMDD14": "", 
+"CSMDD15": "", 
+"CSMDD16": "", 
+"CSITPRODUCTCODE": "electronic_good#electronic_good",
+"CSITPRODUCTDESCRIPTION": "NOTEBOOK L845 #SP4304LA DF TOSHIBA",
+"CSITPRODUCTNAME": "NOTEBOOK# L845 SP4304LA DF TOSHIBA",
+"CSITPRODUCTSKU": "LEVJNS#L36GN",
+"CSITTOTALAMOUNT": "1254.40#980.80",
+"CSITQUANTITY": "1#2",
+"CSITUNITPRICE": "1254.40#980.80"
 }
+
 ```
+Donde MININSTALLMENTS y MAXINSTALLMENTS son datos opcionales para informar la cantidad mínima y máxima de cuotas que ofrecerá el formulario de pago (generalmente de 1 a 12)
+
 
 <p><strong>Ejemplo de Respuesta</strong></p>
 ```python	
@@ -149,7 +215,8 @@ El parámetro <strong>RequestKey</strong> es siempre distinto y debe ser persist
           'PAYMENTMETHODNAME'      : 'VISA',		
           'TICKETNUMBER'           : '12',		
           'CARDNUMBERVISIBLE'      : '450799******4905',		
-          'AUTHORIZATIONCODE'      : 'TEST38'}, 		
+          'AUTHORIZATIONCODE'      : 'TEST38', 
+          'INSTALLMENTPAYMENTS'    : '6' }, 
       'Request' : 		
         {
           'MERCHANT'               : '12345678',		
@@ -489,6 +556,7 @@ El formulario implementado debe contar al menos con los siguientes campos.
 	<select id="tipoDocCbx"></select>
 	<input id="nroDocTxt"/>
 	<input id="emailTxt"/><br/>
+	<button id="MY_btnPagarConBilletera" class="tp-button"/>
 	<button id="MY_btnConfirmarPago"/>
 </body>
 ```
@@ -505,6 +573,7 @@ window.TPFORMAPI.hybridForm.initForm({
     callbackValidationErrorFunction: 'validationCollector',
 	callbackCustomSuccessFunction: 'customPaymentSuccessResponse',
 	callbackCustomErrorFunction: 'customPaymentErrorResponse',
+        callbackBilleteraFunction: 'billeteraPaymentResponse',
 	botonPagarId: 'MY_btnConfirmarPago',
 	modalCssClass: 'modal-class',
 	modalContentCssClass: 'modal-content',
@@ -527,6 +596,8 @@ function customPaymentSuccessResponse(response) {
 }
 function customPaymentErrorResponse(response) {
 }
+function billeteraPaymentResponse(response) {
+}
 function initLoading() {
 }
 function stopLoading() {
@@ -537,6 +608,10 @@ function stopLoading() {
 El formulario define callbacks javascript, que son llamados según el estado y la informacion del pago realizado:
 + customPaymentSuccessResponse: Devuelve response si el pago se realizo correctamente.
 + customPaymentErrorResponse: Si hubo algun error durante el proceso de pago, este devuelve el response con el codigo y mensaje correspondiente.
+
+** Boton Pagar con Billetera **
+En el formulario aparecera la posibilidad de utilizar la billetera virtual de todopago 
+en un boton que se llama "Boton Pagar con Billetera"
 
 **Ejemplo de Implementación**:
 <a href="/resources/form_hibrido-ejemplo/index.html" target="_blank">Formulario hibrido</a>

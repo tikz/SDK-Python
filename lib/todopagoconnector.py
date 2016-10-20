@@ -21,7 +21,7 @@ def deprecated(func):
 	return newFunc
 
 
-ver= '1.4.0'
+ver= '1.5.0'
 soapAppend = 'services/'
 restAppend = 'api/'
 tenant = 't/1.1/'
