@@ -7,7 +7,7 @@
 import sys
 #path to Python SDK
 sys.path = ['..\lib'] + sys.path
-print sys.path
+print(sys.path)
 
 from todopagoconnector import TodoPagoConnector
 
@@ -225,7 +225,7 @@ def GetAuthorizeAnswerCommand():
     }
     
     res = tpc.getAuthorizeAnswer(optionsGAA)
-    print res
+    print(res)
     gaaAnswer.set(res)
     
 def SendAuthorizeRequestCommand():
@@ -292,7 +292,7 @@ def SendAuthorizeRequestCommand():
     }
     
     res = tpc.sendAuthorizeRequest(optionsSAR_comercio, optionsSAR_operacion)
-    print (res)
+    print(res)
     sarAnswer.set(res)
 
 def configCommand():
@@ -310,7 +310,7 @@ def getStatusCommand():
                  'OPERATIONID': gsOperationId.get()}
     
     res = tpc.getStatus(optionsGS)
-    print res
+    print(res)
     gsAnswer.set(res)
     
     

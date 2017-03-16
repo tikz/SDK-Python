@@ -1,10 +1,20 @@
 # -*- coding: utf-8 -*-
-#pip install suds-jurko
-from suds.client import Client
 import requests
-import os.path, sys, urllib, urlparse, warnings, copy, json
-from user import User
-from utils.fraudcontrolvalidation import FraudControlValidation
+import os.path, sys, warnings, copy, json
+from suds.client import Client
+from suds.sax.text import Raw
+from classes.user import User
+
+#import urllib para version 2 o 3
+if sys.version_info[0] >= 3 :
+	from urllib import parse
+	from urllib import request
+else:
+	import urllib	
+
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 def deprecated(func):
 	"""This is a decorator which can be used to mark functions
@@ -21,7 +31,7 @@ def deprecated(func):
 	return newFunc
 
 
-ver= '1.5.0'
+ver= '1.6.0'
 soapAppend = 'services/'
 restAppend = 'api/'
 tenant = 't/1.1/'
@@ -42,6 +52,9 @@ keys_order_GBOI = (
 	'OPERATIONID'
 )
 
+keys_order_GAPM = {
+	'MERCHANT'	
+}
 #############################################
 
 class TodoPagoConnector:
@@ -60,7 +73,6 @@ class TodoPagoConnector:
 		self._end_point_rest = end_point + tenant + restAppend
 		self._end_point_rest_root = end_point + restAppend
 
-
 	######################################################################################
 	###Methodo publico que llama a la primera funcion del servicio SendAuthorizeRequest###
 	######################################################################################
@@ -77,8 +89,8 @@ class TodoPagoConnector:
 	###Methodo publico que llama a la segunda funcion del servicio GetAuthorizeRequest###
 	#####################################################################################
 	def getAuthorize(self, optionsAnwser):
-		return self._parse_gaa(self._getAuthorizeAnswer(optionsAnwser))
-
+		result = self._parse_gaa(self._getAuthorizeAnswer(optionsAnwser))
+		return result
 
 	@deprecated
 	def getAuthorizeAnswer(self, optionsAnwser):
@@ -86,33 +98,32 @@ class TodoPagoConnector:
 
 
 	#####################################################################################
-	###Methodo publico que llama a la segunda funcion del servicio GetAuthorizeRequest###
+	###Methodo publico que llama a la devolucion###
 	#####################################################################################
 	def returnRequest(self, optionsReturn):
 		self._getClientSoap('Authorize')
 		xml = self._parse_to_service(optionsReturn, 'ReturnRequest')
+		xmlFormat = Raw(xml)
 
-		return dict(self.cliente.service.ReturnRequest(__inject={'msg': xml}))
+		return dict(self.cliente.service.ReturnRequest(xmlFormat))
 
 
 	#####################################################################################
-	###Methodo publico que llama a la segunda funcion del servicio GetAuthorizeRequest###
+	###Methodo publico que llama a la anulacion###
 	#####################################################################################
 	def voidRequest(self, optionsVoid):
 		self._getClientSoap('Authorize')
 		xml = self._parse_to_service(optionsVoid, 'VoidRequest')
+		xmlFormat = Raw(xml)
 
-		return dict(self.cliente.service.VoidRequest(__inject={'msg': xml}))
+		return dict(self.cliente.service.VoidRequest(xmlFormat))
 
 
 	################################################################
 	###Methodo publico que descubre todas las promociones de pago###
 	################################################################
 	def getAllPaymentMethods(self, optionsGAPM):
-		self._getClientSoap('PaymentMethods')
-		xml = self._parse_to_service(optionsGAPM, 'GetAll')
-
-		return self.cliente.service.GetAll(__inject={'msg': xml})
+		return self._do_rest("PaymentMethods/Get", optionsGAPM, keys_order_GAPM)
 
 
 	################################################################
@@ -126,8 +137,9 @@ class TodoPagoConnector:
 	def getStatus(self, optionsGS):
 		self._getClientSoap('Operations')
 		xml = self._parse_to_service(optionsGS, 'GetByOperationId')
+		xmlFormat = Raw(xml)
 
-		return self.cliente.service.GetByOperationId(__inject={'msg': xml})
+		return self.cliente.service.GetByOperationId(xmlFormat)
 
 
 	################################################################
@@ -138,45 +150,44 @@ class TodoPagoConnector:
 		return self._do_rest("Operations/GetByRangeDateTime", optionsGBRDT, keys_order_GBRDT)
 
 
-    ################################################################
+        ################################################################
 	###Methodo publico que devuelve las creddenciales###############
 	################################################################
 	def getCredentials(self, user):
-		return self._parse_rest_response(requests.post(self._end_point_rest_root+'Credentials', data = user, headers={'Accept' : 'application/json'}))
-
+		return self._parse_rest_response(requests.post(self._end_point_rest_root+'Credentials', data = json.dumps(user), headers={'Content-Type' : 'application/json'}))
 
 	########################
 	###Metodos privados ####
 	########################
 	def _sendAuthorizeRequest(self, options_comercio, options_operacion):
-		payload = self._get_payload(options_operacion);
+		payload = self._get_payload(options_operacion)
 		options_comercio['Payload'] = payload
 		xml = self._parse_to_service(options_comercio, 'SendAuthorizeRequest')
+		xmlFormat = Raw(xml)
+
 		self._getClientSoap('Authorize')
 
-		return self.cliente.service.SendAuthorizeRequest(__inject={'msg': xml})
+		return self.cliente.service.SendAuthorizeRequest(xmlFormat)
 
 
 	def _getAuthorizeAnswer(self, optionsAnwser):
 		self._getClientSoap('Authorize')
 		xml = self._parse_to_service(optionsAnwser, 'GetAuthorizeAnswer')
+		xmlFormat = Raw(xml)
 
-		return self.cliente.service.GetAuthorizeAnswer(__inject={'msg': xml})
+		return self.cliente.service.GetAuthorizeAnswer(xmlFormat)
 
 
 	def _parse_gaa(self, obj):
 		data = dict(obj)
-		payload = dict(data['Payload'])
-		payload['Answer'] = dict(payload['Answer'])
-		payload['Request'] = dict(payload['Request'])
-		data['Payload'] = payload
 
 		return data
 
 
 	def _get_wsdl_url(self, filename):
-		return urlparse.urljoin('file:', urllib.pathname2url(os.path.abspath(os.path.dirname(__file__)))) + '/' + filename + '.wsdl'
+		url = 'file:///'+os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))+'/wsdl/'+filename+'.wsdl'
 
+		return url
 
 	def _parse_to_service(self, data, servicio):
 		retorno = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://api.todopago.com.ar"><soapenv:Header/><soapenv:Body>"""
@@ -210,14 +221,11 @@ class TodoPagoConnector:
 		diccionario["SDKVERSION"]=ver
 		try:
 			diccionario["LENGUAGEVERSION"]=sys.version
-		except Exception, err:
+		except Exception as err:
 			try:
 				diccionario["LENGUAGEVERSION"]=sys.version()
-			except Exception, err2:
+			except Exception as err2:
 				diccionario["LENGUAGEVERSION"]="version unknown"
-		
-		#validador = FraudControlValidation(diccionario)
-		#diccionario =  validador.validate()
 		
 		xmlpayload = "<Request>"
 		for key in diccionario:
@@ -246,13 +254,14 @@ class TodoPagoConnector:
 	def _parse_rest_response(self, response):
 		return dict(response.json())
 
-
+	 		     
 	def _do_rest(self, service, params, keys_order):
 		sorted_params = self._sort_rest_params(params, keys_order)
 		url = self._end_point_rest + service + self._parse_rest_params(sorted_params)
 
+		#print(self._http_header)
 		headers_aux = copy.deepcopy(self._http_header)
-  		headers_aux["Accept"]= 'application/json'
+		headers_aux['Accept'] = 'application/json'
 		
 		response = requests.get(url, headers=headers_aux)
 

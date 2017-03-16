@@ -62,7 +62,21 @@ j_header_http = {
 tpc = TodoPagoConnector(j_header_http, 'test')
 
 ```		
+<br>
+<a name="agrupador"></a>
+### Operatoria Agrupador
 
+Mediante una única y simple adhesión, los vendedores acceden a todos los medios de pago que el Botón de pago ofrezca sin necesidad de contar con ningún tipo de contrato adicional con cada medio de pago. La funcionalidad “agrupador” de TodoPago, se ocupa de gestionar los acuerdos necesarios con todos los medios de pago a efectos de disponibilizarlos en el Botón.
+
+Para acceder al servicio, los vendedores podrán adherirse en el sitio exclusivo de TodoPago o a través de su ejecutivo comercial. En estos procesos se generará el usuario y clave para este servicio.
+
+Una vez adheridos se creará automáticamente una cuenta virtual, en la cual se acreditarán los fondos provenientes de los cobros realizados con la presente modalidad de pago.
+
+<a name="secuencia"></a>
+## Diagrama de secuencia
+![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/README.img/secuencia-page-001.jpg)
+
+<br>
 <a name="solicitudautorizacion"></a>
 ####Solicitud de autorización		
 En este caso hay que llamar a sendAuthorizeRequest(). 		
@@ -70,17 +84,55 @@ En este caso hay que llamar a sendAuthorizeRequest().
 response = tpc.sendAuthorizeRequest(optionsSAR_comercio, optionsSAR_operacion)
 ```				
 <ins><strong>datos propios del comercio</strong></ins>		
-optionsSAR_comercio debe ser un dicionario con la siguiente estructura:		
+optionsSAR_comercio debe ser un dicionario con la siguiente estructura:	
+
+<table>
+  <tr>
+    <th>Campo</th>
+    <th>Requerido</th>
+    <th>Descripción</th>
+    <th>Tipo de Dato</th>
+    <th>Valores posibles / Ejemplo</th>
+  </tr>
+  <tr>
+    <td><b>Security</b></td>
+    <td>Sí</td>
+    <td>API Keys sin PRISMA o TODOPAGO y sin espacio.</td>
+    <td>Alfanumérico hasta 32 caracteres</td>
+    <td>912EC803B2CE49E4A541068D495AB570</td>
+  </tr>
+  <tr>
+    <td><b>Merchant</b></td>
+    <td>Sí</td>
+    <td>Nro. de Comercio (Merchant ID) provisto por TodoPago</td>
+    <td>Numérico</td>
+    <td>12345678</td>
+  </tr>
+  <tr>
+    <td><b>URL_OK</b></td>
+    <td>No</td>
+    <td>URL a la que el comprador será dirigido cuando la compra resulte exitosa</td>
+    <td>Alfanumérico hasta 256 caracteres</td>
+    <td>http://susitio.com/payment/Ok</td>
+  </tr>
+  <tr>
+    <td><b>URL_Error</b></td>
+    <td>No</td>
+    <td>URL a la que el comprador será dirigido cuando la compra no resulte exitosa</td>
+    <td>Alfanumérico hasta 256 caracteres</td>
+    <td>http://susitio.com/payment/Error</td>
+  </tr>
+</table>
+	
 <a name="url_ok"></a>		
 <a name="url_error"></a>	
 ```python
 optionsSAR_comercio = {
-"Session": "ABCDEF-1234-12221-FDE1-00000200",
-"Security": "f3d8b72c94ab4a06be2ef7c95490f7d3",
-"EncodingMethod": "XML",
-"URL_OK": "http,//someurl.com/ok/",
-"URL_ERROR": "http,//someurl.com/fail/",
-"EMAILCLIENTE": "email_cliente@dominio.com"
+  "Security": "f3d8b72c94ab4a06be2ef7c95490f7d3",
+  "EncodingMethod": "XML",
+  "URL_OK": "http,//someurl.com/ok/",
+  "URL_ERROR": "http,//someurl.com/fail/",
+  "EMAILCLIENTE": "email_cliente@dominio.com"
 }	
 ```		
 
@@ -88,6 +140,52 @@ optionsSAR_comercio = {
 
 <ins><strong>datos propios de la operación</strong></ins>		
 optionsSAR_operacion debe ser un diccionario con la siguiente estructura:		
+		
+<table>
+  <tr>
+    <th><b>Campo</b></th>
+    <th>Requerido</th>
+    <th>Descripción</th>
+    <th>Tipo de Dato</th>
+    <th>Valores Posibles / Ejemplos</th>
+  </tr>
+  <tr>
+    <td><b>MERCHANT</b></td>
+    <td>Sí</td>
+    <td>Nro. de Comercio (Merchant ID) provisto por TodoPago</td>
+    <td>Numérico</td>
+    <td>12345</td>
+  </tr>
+  <tr>
+    <td><b>OPERATIONID</b></td>
+    <td>Sí</td>
+    <td>Identificación de la transacción para el Comercio. Debe ser distinto para cada operación.</td>
+    <td>Alfanumérico de 1 a 40 caracteres</td>
+    <td>10000012</td>
+  </tr>
+    <tr>
+    <td><b>CURRENCYCODE</b></td>
+    <td>Sí</td>
+    <td>Tipo de moneda de la operación. Sólo válido pesos argentinos (32)</td>
+    <td>Numérico de dos posiciones</td>
+    <td>32</td>
+  </tr>
+  <tr>
+    <td><b>AMOUNT</b></td>
+    <td>Sí</td>
+    <td>Importe en Pesos de la transacción.</td>
+    <td>Numérico con 9 dígitos con hasta 2 decimales 999999[.CC]
+Usando el punto como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales.</td>
+    <td>$125,38 -> 125.38</td>
+  </tr>
+  <tr>
+    <td><b>EMAILCLIENTE</b></td>
+    <td>Si</td>
+    <td>El comercio deberá enviar a TodoPago el email del cliente. Esta dirección se utilizará para enviar el mail de confirmación de la compra al cliente</td>
+    <td>Alfanumérico de hasta 80 caracteres.</td>
+    <td>cliente@mail.com</td>
+  </tr>
+</table>		
 		
 ```python
 optionsSAR_operacion = {
@@ -163,6 +261,14 @@ optionsSAR_operacion = {
 ```
 Donde MININSTALLMENTS y MAXINSTALLMENTS son datos opcionales para informar la cantidad mínima y máxima de cuotas que ofrecerá el formulario de pago (generalmente de 1 a 12)
 
+<table><tr>
+<td>Campo</td><td>Requerido</td><td>Descripción</td><td>Tipo de Dato</td><td>Valores posibles / Ejemplo</td></tr>
+<tr><td>**StatusCode**</td><td>Sí</td><td>Código de estado o valor de retorno del Servicio</td><td>Numérico de 5 posiciones</td><td> <ul><li>-1 -> OK</li><li>otro ->Error</li></ul></td></tr>
+<tr><td>**StatusMessage**</td><td>Sí</td><td>Descripción del códgo de retorno o estado del servicio</td><td>Alfanumérico hasta 256</td><td>-</td></tr>
+<tr><td>**URL_Request**</td><td>Sí</td><td>Url del formulario de pago</td><td>URL</td><td>https://forms.todopago.com.ar/formulario/commands?command=formulario&m=t7d3938c9-f7b1-4ee9-e76b-9cc84f73fe81</td></tr>
+<tr><td>**RequestKey**</td><td>No</td><td>Identificador Privado del Requerimiento obtenido en la respuesta de la operación SendAuthorizeRequest. Nunca debe ser expuesto hacia el Web Browser. Solo será utilizado entre el ecommerce y TodoPago</td><td>Alfanumérico hasta 48 caracteres</td><td>8496472a-8c87-e35b-dcf2-94d5e31eb12f</td></tr>
+<tr><td>**PublicRequestKey**</td><td>No</td><td>Identificador Público del Requerimiento obenido en la respuesta de la operación SendAuthorizeRequest</td><td>Alfanumérico de hasta 48 caracteres</td><td>7d3938c9-f7b1-4ee9-e76b-9cc84f73fe81</td></tr>
+</table>
 
 <p><strong>Ejemplo de Respuesta</strong></p>
 ```python	
@@ -182,7 +288,47 @@ Si, por ejemplo, se pasa mal el <strong>MerchantID</strong> se obtendrá la sigu
 ```
 <a name="confirmatransaccion"></a>
 ####Confirmación de transacción.		
-En este caso hay que llamar a **getAuthorizeAnswer()**, enviando como parámetro un diccionario como se describe a continuación.		
+En este caso hay que llamar a **getAuthorizeAnswer()**, enviando como parámetro un diccionario como se describe a continuación.	
+
+<table>
+  <tr>
+    <th>Campo</th>
+    <th>Requerido</th>
+    <th>Descripción</th>
+    <th>Tipo de Dato</th>
+    <th>Valores posibles / Ejemplo</th>
+  </tr>
+  <tr>
+    <td><b>Security</b></td>
+    <td>No</td>
+    <td>Token  de Seguridad Generado en el Portal de TodoPago</td>
+    <td>Alfanumérico hasta 32 caracteres</td>
+    <td>1234567890ABCDEF1234567890ABCDEF</td>
+  </tr>
+  <tr>
+    <td><b>Merchant</b></td>
+    <td>Si</td>
+    <td>Nro. de Comercio (Merchant ID) provisto por TodoPago</td>
+    <td>Alfanumérico de  8 caracteres</td>
+    <td>12345678</td>
+  </tr>
+  <tr>
+    <td><b>RequestKey</b></td>
+    <td>Si</td>
+    <td>Identificador Privado del Requerimiento obtenido en la respuesta de la operación SendAuthorizeRequest . Nunca debe ser expuesto hacia el Web Browser. Solo será utilizado entre el ecommerce y TodoPago</td>
+    <td>Alfanumérico hasta 48 caracteres</td>
+    <td>8496472a-8c87-e35b-dcf2-94d5e31eb12f</td>
+  </tr>
+  <tr>
+    <td><b>AnswerKey</b></td>
+    <td>Sí</td>
+    <td>Identificador Público de la Respuesta. Recibido según el formulario utilizado, en la url de redirección hacia el ecommerce, o como propiedad retornada en el callback del formulario hibrido.</td>
+    <td>Alfanumérico hasta 48 caracteres</td>
+    <td>8496472a-8c87-e35b-dcf2-94d5e31eb12f</td>
+  </tr>
+</table>
+
+	
 ```python		
 {		
 		'Security': '1234567890ABCDEF1234567890ABCDEF', // Token de seguridad, provisto por TODO PAGO. MANDATORIO.		
@@ -197,6 +343,28 @@ Se deben guardar y recuperar los valores de los campos <strong>RequestKey</stron
 El parámetro <strong>RequestKey</strong> es siempre distinto y debe ser persistido de alguna forma cuando el comprador es redirigido al formulario de pagos.
 
 <ins><strong>Importante</strong></ins> El campo **AnswerKey** se adiciona  en la redirección que se realiza a alguna de las direcciones ( URL ) epecificadas en el  servicio **SendAurhorizationRequest**, esto sucede cuando la transacción ya fue resuelta y es necesario regresar al site para finalizar la transacción de pago, también se adiciona el campo Order, el cual tendrá el contenido enviado en el campo **OPERATIONID**. Para nuestro ejemplo: <strong>http://susitio.com/paydtodopago/ok?Order=27398173292187&Answer=1111-2222-3333-4444-5555-6666-7777</strong>		
+
+<table>
+<tr><td>Campo</td><td>Requerido</td><td>Descripción</td><td>Tipo de Dato</td><td>Valores posibles / Ejemplo</td></tr>
+<tr><td>**StatusCode** </td><td>Si</td><td>Código de estado o valor de retorno del Servicio</td><td>Numèrico de 5 posiciones</td><td> <b>-1 -> OK<br> 0 a 99999 o vacío -> error</b></td></tr>
+<tr><td>**StatusMessage**</td><td>Si</td><td>Descripción del código de retorno o estado del servicio</td><td>Alfanumérico hasta 256</td><td>-</td></tr>
+<tr><td>**AuthorizationKey**</td><td>No</td><td>Identificador Privado de la Respuesta</td><td>Alfanumérico hasta 256 caracteres</td><td>-</td></tr>
+<tr><td>**EncodingMethod**</td><td>No</td><td>Especifica el tipo codificación que se usa para los datos de la transacciones de pagos</td><td>Alfanumérico hasta 16 caracteres</td><td>XML</td></tr>
+<tr><td>**Payload**</td><td>No</td><td>Documento codificado  en el  formato especificado en el campo EncodingMethod  el cual contiene los datos de la transacción ejecutada</td><td>Alfanumérico hasta 2048 caracteres</td><td>-</td></tr></table>
+
+<table>
+<tr><td>Campo</td><td>Requerido</td><td>Descripción</td><td>Tipo de Dato</td><td>Valores posibles / Ejemplo</td></tr>
+<tr><td>**DATETIME**</td><td>Si</td><td>Fecha y Hora de la Transacción</td><td>Fecha y Hora. aaaammddTHHMMSSZ La hora se expresa en formato 24 hs.</td><td></td></tr>
+<tr><td>**RESULTCODE**</td><td>Si</td><td>Código de estado o valor de retorno del Servicio</td><td>Numérico de 5 posiciones</td><td> <b>-1 -> OK<br> 0 a 99999 o vacío -> error</b></td></tr>
+<tr><td>**RESULTMESSAGE**</td><td>Si</td><td>Descripción del código de retorno o estado del servicio</td><td>Alfanumérico hasta 256</td><td>-</td></tr>
+<tr><td>**CURRENCYNAME**</td><td>No</td><td>Nombre de la Moneda</td><td> 'Pesos'</td><td> </td></tr>
+<tr><td>**PAYMENTMETHODNAME**</td><td>Sí </td><td>Medio de pago usado para la operación</td><td>'VISA'</td><td></td></tr>
+<tr><td>**TICKETNUMBER** </td><td>No</td><td>Número de Ticket o Voucher</td><td>Numérico de Hasta 4 dígitos</td><td></td></tr>
+<tr><td>**CARDNUMBERVISIBLE**</td><td>No</td><td>Número de Tarjeta, enmascarado según normativas nacionales, regionales o globales</td><td></td><td></td></tr>
+<tr><td>**AUTHORIZATIONCODE**</td><td>No</td><td>Código de Autorización</td><td>Alfanumérico de hasta 8 caracteres</td><td></td></tr>
+<tr><td>**INSTALLMENTPAYMENTS**</td><td>No</td><td>Cantidad de cuotas elegidas para la operación</td><td>Numérico</td><td> Ejemplo: 03</td></tr>
+<tr><td>**AMOUNTBUYER**</td><td>Si</td><td>Monto final (incluyendo Costo Financiero) pagado por el comprador</td><td>Decimal</td><td> Ejemplo: 129.68</td></tr>
+</table>
 		
 ```python		
 {	
@@ -236,17 +404,6 @@ Si se pasa mal el <strong>AnswerKey</strong> o el <strong>RequestKey</strong> se
 {
   'StatusCode' :  404
   'StatusMessage' : string 'ERROR: Transaccion Inexistente'}
-
-
-<a name="test"></a>      
-####Modo Test
-
-El SDK-Python permite trabajar con los ambiente de desarrollo y de produccion de Todo Pago.<br>
-El ambiente se debe instanciar como se indica a continuacion.
-
-Para utlilizar el modo test se debe pasar un end point de prueba (provisto por TODO PAGO).
-````python
-tpc = TodoPagoConnector(j_header_http_test, j_wsdls_test, end_point_test)
 ```
 
 [<sub>Volver a inicio</sub>](#inicio)
@@ -258,9 +415,8 @@ Los datos adicionales para control de fraude son **obligatorios**, de lo contrar
 
 Los campos marcados como **condicionales** afectan al score negativamente si no son enviados, pero no son mandatorios o bloqueantes.
 
-```python	
-optionsSAR_operacion={ 		
-...........................................................................		
+````python	
+optionsSAR_operacion={ 				
 'CSBTCITY': "Villa General Belgrano", #Ciudad de facturación, #MANDATORIO.		
 'CSBTCOUNTR': "AR", #País de facturación. MANDATORIO. Código ISO. (http://apps.cybersource.com/library/documentation/sbc/quickref/countries_alpha_list.pdf)		
 'CSBTCUSTOMERID': "453458", #Identificador del usuario al que se le emite la factura. MANDATORIO. No puede contener un correo electrónico.		
@@ -305,8 +461,7 @@ optionsSAR_operacion={
 'CSMDD14':"", #Customer requires Tax Bill ? (Y/N). NO MANDATORIO.		
 'CSMDD15':"", #Customer Loyality Number. NO MANDATORIO. 		
 'CSMDD16':"", #Promotional / Coupon Code. NO MANDATORIO. #Retail: datos a enviar por cada producto, los valores deben estar separado con #:		
-
-...........................................................		
+		
 ```
 <a name="datosreferencia"></a>    
 #### Datos de referencia   
@@ -388,6 +543,31 @@ optionsSAR_operacion={
 
 <a name="status"></a>
 ####Status de la Operación
+
+<table>
+  <tr>
+    <th>Campo</th>
+    <th>Requerido</th>
+    <th>Descripción</th>
+    <th>Tipo de Dato</th>
+    <th>Valores posibles / Ejemplo</th>
+  </tr>
+  <tr>
+    <td><b>MERCHANT</b></td>
+    <td>Sí</td>
+    <td>Código de comercio o cuenta provisto por TodoPago</td>
+    <td>Alfanumérico de 8 caracteres</td>
+    <td>12345678</td>
+  </tr>
+  <tr>
+    <td><b>OPERATIONID</b></td>
+    <td>Sí</td>
+    <td>Identificación de la transacción para el Comercio. Debe ser distinto para cada operación.</td>
+    <td>Alfanumérico de 1 a 40 caracteres.</td>
+    <td>141120084707</td>
+  </tr>
+</table>
+
 La SDK cuenta con un método para consultar el status de la transacción desde la misma SDK. El método se utiliza de la siguiente manera:
 ```python
 optionsGS = {
@@ -397,6 +577,123 @@ optionsGS = {
 print tpc.getByoperationId(optionsGS)
 ```
 El siguiente método retornará el status actual de la transacción en Todopago.
+
+<table>
+  <tr>
+    <th>Campo</th>
+    <th>Requerido</th>
+    <th>Descripción</th>
+    <th>Tipo de Dato</th>
+    <th>Valores posibles / Ejemplo</th>
+  </tr>
+  <tr>
+  <td><b>RESULTCODE</b></td>
+  <td>Sí</td>
+  <td>Número identificador del estado en el que se encuentra la transacción</td>
+  <td>Numérico</td>
+  <td></td>
+  </tr>
+  <tr>
+  <td><b>RESULTMESSAGE</b></td>
+  <td>Sí</td>
+  <td>Describe el estado en el que se encuentra la transacción</td>
+  <td>Alfanumérico</td>
+  <td></td>
+  </tr>
+  <tr>
+    <td><b>DATETIME</b></td>
+    <td>No</td>
+    <td></td>
+    <td></td>
+    <td>2015-05-13T14:11:38.287+00:00</td>
+  </tr>
+  <tr>
+    <td><b>OPERATIONID</b></td>
+    <td>Sí</td>
+    <td>Identificación de la transacción para el Comercio. Debe ser distinto para cada operación.</td>
+    <td>Alfanumérico de 1 a 40 caracteres.</td>
+    <td>141120084707</td>
+  </tr>
+  <tr>
+    <td><b>CURRENCYCODE</b></td>
+    <td>Sí</td>
+    <td>Códiog de moneda utilizado en la transacción. Por el momento solo 32 (Pesos</td>
+    <td>Numérico/td>
+    <td>32</td>
+  </tr>
+  <tr>
+    <td><b>AMOUNT</b></td>
+    <td>Sí</td>
+    <td>Importe original en Pesos de la transacción.</td>
+    <td>Numérico con 9 dígitos con hasta 2 decimales 999999[.CC]
+Usando el punto como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales.</td>
+    <td>$125,38 -> 125.38 <br />$12 -> 12.00</td>
+  </tr>
+  <tr>
+    <td><b>AMOUNTBUYER</b></td>
+    <td>Sí</td>
+    <td>Importe final en Pesos de la transacción.</td>
+    <td>Numérico con 9 dígitos con hasta 2 decimales 999999[.CC]
+Usando el punto como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales.</td>
+    <td>$125,38 -> 125.38 <br />$12 -> 12.00</td>
+  </tr>  
+  <tr>
+    <td><b>TYPE</b></td>
+    <td>Sí</td>
+    <td>Tipo de Operación, en el caso del GetStatus siempre será *compra_online*</td>
+    <td>Alfanumérico</td>
+    <td>compra_online</td>
+  </tr>
+  <tr>
+    <td><b>INSTALLMENTPAYMENTS</b></td>
+    <td>No</td>
+    <td>Código de autorización generado por el medio de pago</td>
+    <td>Decimal de hasta dos dígitos.</td>
+    <td>01, 02, 06, 12, etc.</td>
+  </tr>
+  <tr>
+  <td><b>CUSTOMEREMAIL</b></td>
+  <td>Sí</td>
+  <td>Mail del usuario al que se le emite la factura</td>
+  <td>Alfanumérico de 100 caracteres.</td>
+  <td>Ejemplo: cosme@fulanito.com</td>
+  </tr>
+  <tr>
+  <td><b>IDENTIFICATIONTYPE</b></td>
+  <td>No</td>
+  <td>Tipo de documento</td>
+  <td></td>
+  <td>DNI<br />CI<br />LE<br />LC</td>
+  </tr>
+  <tr>
+    <td><b>IDENTIFICATION</b></td>
+    <td>No</td>
+    <td>Número de documento</td>
+    <td>Numérico</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CARDNUMBER</b></td>
+    <td>No</td>
+    <td>Número de Tarjeta, enmascarado según normativas nacionales</td>
+    <td>alfanumérico de 20 caracteres</td>
+    <td></td>
+  </tr>
+  <tr>
+  <td><b>TITULAR</b></td>
+  <td>No</td>
+  <td>Nombre del titular de la tarjeta.</td>
+  <td>Alfanumérico</td>
+  <td></td>
+  </tr>
+  <tr>
+    <td><b>NROTICKET</b></td>
+    <td>No</td>
+    <td>Numero de Ticket o Voucher</td>
+    <td>Numérico de Hasta 4 dígitos</td>
+    <td></td>
+  </tr>
+</table>
 
 <ins><strong>Ejemplo de Respuesta</strong></ins>
 ```python
@@ -445,6 +742,15 @@ response = tpc.getByRangeDateTime(optionsGBRDT)
 La SDK dispone de métodos para realizar la devolución, de una transacción realizada a traves de TodoPago.
 
 Se debe llamar al método ```voidRequest``` de la siguiente manera:
+
+Campo            | Requerido  | Descripción                                                              | Tipo de Dato | Valores posibles / Ejemplo
+-----------------|------------|---------------------------------------------------------------------     |--------------|---------------------------
+Security         | Sí         | API Key del comercio asignada por TodoPago                               | alfanumérico | 837BE68A892F06C17B944F344AEE8F5F
+Merchant         | Sí         | Nro de comercio asignado por TodoPago                                    | numérico     | 12345
+RequestKey       | No*        | RequestKey devuelto como respuesta del servicio SendAutorizeRequest      | alfanumérico | 6d2589f2-37e6-1334-7565-3dc19404480c
+AuthorizationKey | No*        | AuthorizationKey devuelto como respuesta del servicio GetAuthorizeAnswer | alfanumérico | 4a2569a2-38e6-4589-1564-4480c3dc1940
+
+
 ```python
 options = {
 "Security" : "837BE68A892F06C17B944F344AEE8F5F", #API Key del comercio asignada por TodoPago 
@@ -468,6 +774,12 @@ resp = tpc.voidRequest(options)
 **Respuesta del servicio:**
 Si la operación fue realizada correctamente se informará con un código 2011 y un mensaje indicando el éxito de la operación.
 
+Campo         | Requerido   | Descripción                                      |Tipo de Dato  | Valores posibles / Ejemplo
+--------------|-------------|--------------------------------------------------|--------------|----------------------------------
+StatusCode    | Sí          |Número de identificación del motivo del resultado | Numérico     | 2011
+StatusMessage | Sí          |Resultado de la devolución                        | Alfanumérico | Operación realizada correctamente
+
+
 ```python
 {
 	"StatusCode" : 2011,
@@ -476,12 +788,23 @@ Si la operación fue realizada correctamente se informará con un código 2011 y
 ```
 <br>
 
+
+
 <a name="devolucionparcial"></a>
 ####Devolución parcial
 
 La SDK dispone de métodos para realizar la devolución parcial, de una transacción realizada a traves de TodoPago.
 
 Se debe llamar al método ```returnRequest``` de la siguiente manera:
+
+Campo            | Requerido | Descripción                                                              | Tipo de Dato                                                                  | Valores posibles / Ejemplo
+-----------      |------------|--------------------------------------------------------------------------|-------------------------------------------------------------------------------|---------------------------
+Security         | Sí         | API Key del comercio asignada por TodoPago                               | alfanumérico                                                                  | 837BE68A892F06C17B944F344AEE8F5F
+Merchant         | Sí         | Nro de comercio asignado por TodoPago                                    | numérico                                                                      | 12345
+RequestKey       | No*        | RequestKey devuelto como respuesta del servicio SendAutorizeRequest      | alfanumérico                                                                  | 6d2589f2-37e6-1334-7565-3dc19404480c
+AuthorizationKey | No*        | AuthorizationKey devuelto como respuesta del servicio GetAuthorizeAnswer | alfanumérico                                                                  | 4a2569a2-38e6-4589-1564-4480c3dc1940
+AMOUNT           | No         | Monto a devolver, si no se envía, se trata de una devolución total       | string usando . como separador decimal, incluyendo SIEMPRE 2 cifras decimales | 23.50
+
 ```python
 
 options = {
@@ -506,6 +829,14 @@ resp = tpc.returnRequest(options)
 ```
 
 **Respuesta de servicio:**
+
+Campo         | Requerido   | Descripción                                      |Tipo de Dato  | Valores posibles / Ejemplo
+--------------|-------------|--------------------------------------------------|--------------|----------------------------------
+StatusCode    | Sí          |Número de identificación del motivo del resultado | Numérico     | 2011
+StatusMessage | Sí          |Resultado de la devolución                        | Alfanumérico | Operación realizada correctamente
+
+Si la operación fue realizada correctamente se informará con un código 2011 y un mensaje indicando el éxito de la operación.
+
 Si la operación fue realizada correctamente se informará con un código 2011 y un mensaje indicando el éxito de la operación.
 
 ```python
@@ -651,13 +982,6 @@ tpc.getCredentials(userCredenciales);
 [<sub>Volver a inicio</sub>](#inicio)
 <br>
 
-<a name="secuencia"></a>
-##Diagrama de secuencia
-![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/README.img/secuencia-page-001.jpg)
-
-[<sub>Volver a inicio</sub>](#inicio)
-<br>
-
 <a name="tablareferencia"></a>    
 ## Tablas de Referencia   
 ######[Provincias](#p)    
@@ -676,4 +1000,76 @@ tpc.getCredentials(userCredenciales);
 <tr><td>Formosa</td><td>P</td></tr>		
 <tr><td>Jujuy</td><td>Y</td></tr>		
 <tr><td>La Pampa</td><td>L</td></tr>		
-<tr><td>La Rioj
+<tr><td>La Rioja</td><td>F</td></tr>		
+<tr><td>Mendoza</td><td>M</td></tr>		
+<tr><td>Misiones</td><td>N</td></tr>		
+<tr><td>Neuquén</td><td>Q</td></tr>		
+<tr><td>Río Negro</td><td>R</td></tr>		
+<tr><td>Salta</td><td>A</td></tr>		
+<tr><td>San Juan</td><td>J</td></tr>		
+<tr><td>San Luis</td><td>D</td></tr>		
+<tr><td>Santa Cruz</td><td>Z</td></tr>		
+<tr><td>Santa Fe</td><td>S</td></tr>		
+<tr><td>Santiago del Estero</td><td>G</td></tr>		
+<tr><td>Tierra del Fuego</td><td>V</td></tr>		
+<tr><td>Tucumán</td><td>T</td></tr>		
+</table>
+
+[<sub>Volver a inicio</sub>](#inicio)
+
+<a name="codigoerrores"></a>    
+## Tabla de errores     
+
+<table>		
+<tr><th>Id mensaje</th><th>Mensaje</th></tr>				
+<tr><td>-1</td><td>Aprobada.</td></tr>
+<tr><td>1081</td><td>Tu saldo es insuficiente para realizar la transacción.</td></tr>
+<tr><td>1100</td><td>El monto ingresado es menor al mínimo permitido</td></tr>
+<tr><td>1101</td><td>El monto ingresado supera el máximo permitido.</td></tr>
+<tr><td>1102</td><td>La tarjeta ingresada no corresponde al Banco indicado. Revisalo.</td></tr>
+<tr><td>1104</td><td>El precio ingresado supera al máximo permitido.</td></tr>
+<tr><td>1105</td><td>El precio ingresado es menor al mínimo permitido.</td></tr>
+<tr><td>2010</td><td>En este momento la operación no pudo ser realizada. Por favor intentá más tarde. Volver a Resumen.</td></tr>
+<tr><td>2031</td><td>En este momento la validación no pudo ser realizada, por favor intentá más tarde.</td></tr>
+<tr><td>2050</td><td>Lo sentimos, el botón de pago ya no está disponible. Comunicate con tu vendedor.</td></tr>
+<tr><td>2051</td><td>La operación no pudo ser procesada. Por favor, comunicate con tu vendedor.</td></tr>
+<tr><td>2052</td><td>La operación no pudo ser procesada. Por favor, comunicate con tu vendedor.</td></tr>
+<tr><td>2053</td><td>La operación no pudo ser procesada. Por favor, intentá más tarde. Si el problema persiste comunicate con tu vendedor</td></tr>
+<tr><td>2054</td><td>Lo sentimos, el producto que querés comprar se encuentra agotado por el momento. Por favor contactate con tu vendedor.</td></tr>
+<tr><td>2056</td><td>La operación no pudo ser procesada. Por favor intentá más tarde.</td></tr>
+<tr><td>2057</td><td>La operación no pudo ser procesada. Por favor intentá más tarde.</td></tr>
+<tr><td>2059</td><td>La operación no pudo ser procesada. Por favor intentá más tarde.</td></tr>
+<tr><td>90000</td><td>La cuenta destino de los fondos es inválida. Verificá la información ingresada en Mi Perfil.</td></tr>
+<tr><td>90001</td><td>La cuenta ingresada no pertenece al CUIT/ CUIL registrado.</td></tr>
+<tr><td>90002</td><td>No pudimos validar tu CUIT/CUIL.  Comunicate con nosotros <a href="#contacto" target="_blank">acá</a> para más información.</td></tr>
+<tr><td>99900</td><td>El pago fue realizado exitosamente</td></tr>
+<tr><td>99901</td><td>No hemos encontrado tarjetas vinculadas a tu Billetera. Podés  adherir medios de pago desde www.todopago.com.ar</td></tr>
+<tr><td>99902</td><td>No se encontro el medio de pago seleccionado</td></tr>
+<tr><td>99903</td><td>Lo sentimos, hubo un error al procesar la operación. Por favor reintentá más tarde.</td></tr>
+<tr><td>99970</td><td>Lo sentimos, no pudimos procesar la operación. Por favor reintentá más tarde.</td></tr>
+<tr><td>99971</td><td>Lo sentimos, no pudimos procesar la operación. Por favor reintentá más tarde.</td></tr>
+<tr><td>99977</td><td>Lo sentimos, no pudimos procesar la operación. Por favor reintentá más tarde.</td></tr>
+<tr><td>99978</td><td>Lo sentimos, no pudimos procesar la operación. Por favor reintentá más tarde.</td></tr>
+<tr><td>99979</td><td>Lo sentimos, el pago no pudo ser procesado.</td></tr>
+<tr><td>99980</td><td>Ya realizaste un pago en este sitio por el mismo importe. Si querés realizarlo nuevamente esperá 5 minutos.</td></tr>
+<tr><td>99982</td><td>En este momento la operación no puede ser realizada. Por favor intentá más tarde.</td></tr>
+<tr><td>99983</td><td>Lo sentimos, el medio de pago no permite la cantidad de cuotas ingresadas. Por favor intentá más tarde.</td></tr>
+<tr><td>99984</td><td>Lo sentimos, el medio de pago seleccionado no opera en cuotas.</td></tr>
+<tr><td>99985</td><td>Lo sentimos, el pago no pudo ser procesado.</td></tr>
+<tr><td>99986</td><td>Lo sentimos, en este momento la operación no puede ser realizada. Por favor intentá más tarde.</td></tr>
+<tr><td>99987</td><td>Lo sentimos, en este momento la operación no puede ser realizada. Por favor intentá más tarde.</td></tr>
+<tr><td>99988</td><td>Lo sentimos, momentaneamente el medio de pago no se encuentra disponible. Por favor intentá más tarde.</td></tr>
+<tr><td>99989</td><td>La tarjeta ingresada no está habilitada. Comunicate con la entidad emisora de la tarjeta para verificar el incoveniente.</td></tr>
+<tr><td>99990</td><td>La tarjeta ingresada está vencida. Por favor seleccioná otra tarjeta o actualizá los datos.</td></tr>
+<tr><td>99991</td><td>Los datos informados son incorrectos. Por favor ingresalos nuevamente.</td></tr>
+<tr><td>99992</td><td>La fecha de vencimiento es incorrecta. Por favor seleccioná otro medio de pago o actualizá los datos.</td></tr>
+<tr><td>99993</td><td>La tarjeta ingresada no está vigente. Por favor seleccioná otra tarjeta o actualizá los datos.</td></tr>
+<tr><td>99994</td><td>El saldo de tu tarjeta no te permite realizar esta operacion.</td></tr>
+<tr><td>99995</td><td>La tarjeta ingresada es invalida. Seleccioná otra tarjeta para realizar el pago.</td></tr>
+<tr><td>99996</td><td>La operación fué rechazada por el medio de pago porque el monto ingresado es inválido.</td></tr>
+<tr><td>99997</td><td>Lo sentimos, en este momento la operación no puede ser realizada. Por favor intentá más tarde.</td></tr>
+<tr><td>99998</td><td>Lo sentimos, la operación fue rechazada. Comunicate con la entidad emisora de la tarjeta para verificar el incoveniente o seleccioná otro medio de pago.</td></tr>
+<tr><td>99999</td><td>Lo sentimos, la operación no pudo completarse. Comunicate con la entidad emisora de la tarjeta para verificar el incoveniente o seleccioná otro medio de pago.</td></tr>
+</table>
+
+[<sub>Volver a inicio</sub>](#inicio)
