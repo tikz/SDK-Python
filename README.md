@@ -1,4 +1,4 @@
-<a name="inicio"></a>		
+<a name="inicio"></a>
 Todo Pago - módulo SDK-Python para conexión con gateway de pago
 =======
 
@@ -20,6 +20,7 @@ Todo Pago - módulo SDK-Python para conexión con gateway de pago
     + [Devolucion parcial](#devolucionparcial)
     + [Formulario hibrido](#formhidrido)
     + [Obtener Credenciales](#credenciales)
+    + [Tiempo de vida del formulario](#tiempovida)
  + [Diagrama de secuencia](#secuencia)
  + [Tablas de referencia](#tablareferencia)		
  + [Tabla de errores](#codigoerrores)		 
@@ -29,26 +30,30 @@ Todo Pago - módulo SDK-Python para conexión con gateway de pago
 El SDK utiliza como dependencias *suds-jurko*, *requests* y *xmltodict*. Para instalarlas correr las siguientes lineas en la consola:
 ej: pip install suds-jurko <-- instalar la dependencia
 ```bash
+#servicio soap-rest
 > pip install suds-jurko
 > pip install requests
+#probrar test unitarios
+> pip install unittest
+#probar ejemplo completo
+> pip install bottle
 ```
 
-<a name="Versionesdepysoportadas"></a>   
-##Versiones de Python soportadas
-La versión implementada de la SDK, esta testeada para versiones desde Python 2.7 en adelante. 
+<a name="Versionesdepysoportadas"></a>
+## Versiones de Python soportadas
+La versión implementada del SDK está testeada para versiones desde Python 2.7 en adelante.
 
 <a name="general"></a>
-##Generalidades
+## Generalidades
 Esta versión soporta únicamente pago en moneda nacional argentina (CURRENCYCODE = 32).
 Todos los métodos devuelven la respuesta en forma de diccionario.
 [<sub>Volver a inicio</sub>](#inicio)
-	
-<br>
-<a name="uso"></a>		
-## Uso		
+
+<a name="uso"></a>
+## Uso
 
 <a name="initconector"></a>
-####Inicializar la clase correspondiente al conector (TodoPagoConnector).
+#### Inicializar la clase correspondiente al conector (TodoPagoConnector).
 
 - crear un JSON con los http header suministrados por todo pago
 ```python
@@ -61,16 +66,16 @@ j_header_http = {
 ```python
 tpc = TodoPagoConnector(j_header_http, 'test')
 
-```		
-<br>
-<a name="agrupador"></a>
-### Operatoria Agrupador
+```
 
-Mediante una única y simple adhesión, los vendedores acceden a todos los medios de pago que el Botón de pago ofrezca sin necesidad de contar con ningún tipo de contrato adicional con cada medio de pago. La funcionalidad “agrupador” de TodoPago, se ocupa de gestionar los acuerdos necesarios con todos los medios de pago a efectos de disponibilizarlos en el Botón.
+<a name="agrupador"></a>
+#### Operatoria Agrupador
+
+Mediante una única y simple adhesión, los vendedores acceden a todos los medios de pago que el Botón de pago ofrezca sin necesidad de contar con ningún tipo de contrato adicional con cada medio de pago. La funcionalidad “agrupador” de TodoPago se ocupa de gestionar los acuerdos necesarios con todos los medios de pago a efectos de disponibilizarlos en el Botón.
 
 Para acceder al servicio, los vendedores podrán adherirse en el sitio exclusivo de TodoPago o a través de su ejecutivo comercial. En estos procesos se generará el usuario y clave para este servicio.
 
-Una vez adheridos se creará automáticamente una cuenta virtual, en la cual se acreditarán los fondos provenientes de los cobros realizados con la presente modalidad de pago.
+Una vez adheridos, se creará automáticamente una cuenta virtual, en la cual se acreditarán los fondos provenientes de los cobros realizados con la presente modalidad de pago.
 
 <a name="secuencia"></a>
 ## Diagrama de secuencia
@@ -78,13 +83,15 @@ Una vez adheridos se creará automáticamente una cuenta virtual, en la cual se 
 
 <br>
 <a name="solicitudautorizacion"></a>
-####Solicitud de autorización		
-En este caso hay que llamar a sendAuthorizeRequest(). 		
-```python	
+#### Solicitud de autorización
+
+En este caso hay que llamar a sendAuthorizeRequest().
+```python
 response = tpc.sendAuthorizeRequest(optionsSAR_comercio, optionsSAR_operacion)
-```				
-<ins><strong>datos propios del comercio</strong></ins>		
-optionsSAR_comercio debe ser un dicionario con la siguiente estructura:	
+
+```
+<ins><strong>datos propios del comercio</strong></ins>
+optionsSAR_comercio debe ser un dicionario con la siguiente estructura:
 
 <table>
   <tr>
@@ -123,9 +130,9 @@ optionsSAR_comercio debe ser un dicionario con la siguiente estructura:
     <td>http://susitio.com/payment/Error</td>
   </tr>
 </table>
-	
-<a name="url_ok"></a>		
-<a name="url_error"></a>	
+
+<a name="url_ok"></a>
+<a name="url_error"></a>
 ```python
 optionsSAR_comercio = {
   "Security": "f3d8b72c94ab4a06be2ef7c95490f7d3",
@@ -133,14 +140,14 @@ optionsSAR_comercio = {
   "URL_OK": "http,//someurl.com/ok/",
   "URL_ERROR": "http,//someurl.com/fail/",
   "EMAILCLIENTE": "email_cliente@dominio.com"
-}	
-```		
+}
+```
 
 *En el ejemplo se envían parámetros en la url (en nuestro ejemplo: ?Order=27398173292187), para ser recibidos por la tienda vía **get** y de este modo recuperar el valor en un próximo paso.
 
-<ins><strong>datos propios de la operación</strong></ins>		
-optionsSAR_operacion debe ser un diccionario con la siguiente estructura:		
-		
+<ins><strong>Datos propios de la operación</strong></ins>
+optionsSAR_operacion debe ser un diccionario con la siguiente estructura:
+
 <table>
   <tr>
     <th><b>Campo</b></th>
@@ -185,16 +192,15 @@ Usando el punto como separador de decimales. No se permiten comas, ni como separ
     <td>Alfanumérico de hasta 80 caracteres.</td>
     <td>cliente@mail.com</td>
   </tr>
-</table>		
-		
+</table>
+
+
 ```python
 optionsSAR_operacion = {
 "MERCHANT": "2866",
 "OPERATIONID": "06",
 "CURRENCYCODE": "032",
 "AMOUNT": "54",
-"MININSTALLMENTS": "3",
-"MAXINSTALLMENTS": "6",
 "CSBTCITY": "Villa General Belgrano",
 "CSSTCITY": "Villa General Belgrano",
 "CSMDD6" : "",
@@ -244,11 +250,11 @@ optionsSAR_operacion = {
 "STPOSTALCODE": "1414",
 "STSTATE": "D",
 "STSTREET1": "San Martin 123",
-"CSMDD12": "", 
-"CSMDD13": "", 
-"CSMDD14": "", 
-"CSMDD15": "", 
-"CSMDD16": "", 
+"CSMDD12": "",
+"CSMDD13": "",
+"CSMDD14": "",
+"CSMDD15": "",
+"CSMDD16": "",
 "CSITPRODUCTCODE": "electronic_good#electronic_good",
 "CSITPRODUCTDESCRIPTION": "NOTEBOOK L845 #SP4304LA DF TOSHIBA",
 "CSITPRODUCTNAME": "NOTEBOOK# L845 SP4304LA DF TOSHIBA",
@@ -259,7 +265,6 @@ optionsSAR_operacion = {
 }
 
 ```
-Donde MININSTALLMENTS y MAXINSTALLMENTS son datos opcionales para informar la cantidad mínima y máxima de cuotas que ofrecerá el formulario de pago (generalmente de 1 a 12)
 
 <table><tr>
 <td>Campo</td><td>Requerido</td><td>Descripción</td><td>Tipo de Dato</td><td>Valores posibles / Ejemplo</td></tr>
@@ -270,25 +275,484 @@ Donde MININSTALLMENTS y MAXINSTALLMENTS son datos opcionales para informar la ca
 <tr><td>**PublicRequestKey**</td><td>No</td><td>Identificador Público del Requerimiento obenido en la respuesta de la operación SendAuthorizeRequest</td><td>Alfanumérico de hasta 48 caracteres</td><td>7d3938c9-f7b1-4ee9-e76b-9cc84f73fe81</td></tr>
 </table>
 
-<p><strong>Ejemplo de Respuesta</strong></p>
-```python	
+**Ejemplo de Respuesta**
+
+
+```python
     {
-    'StatusCode' : -1, 
-    'StatusMessage' : 'Solicitud de Autorizacion Registrada', 
+    'StatusCode' : -1,
+    'StatusMessage' : 'Solicitud de Autorizacion Registrada',
     'URL_Request' : 'https://developers.todopago.com.ar/formulario/commands?command=formulario&m=6d2589f2-37e6-1334-7565-3dc19404480c',
     'RequestKey' : '6d2589f2-37e6-1334-7565-3dc19404480c',
     'PublicRequestKey' : '6d2589f2-37e6-1334-7565-3dc19404480c'
+    }
 ```
-La **url_request** es donde está hosteado el formulario de pago y donde hay que redireccionar al usuario, una vez realizado el pago según el éxito o fracaso del mismo, el formulario redireccionará a una de las 2 URLs seteadas en **optionsSAR_comercio** ([URL_OK](#url_ok), en caso de éxito o [URL_ERROR](#url_error), en caso de que por algún motivo el formulario rechace el pago)
+
+La **url_request** es donde está hosteado el formulario de pago y donde hay que redireccionar al usuario. Una vez realizado el pago, según el éxito o fracaso del mismo, el formulario redireccionará a una de las 2 URLs seteadas en **optionsSAR_comercio** ([URL_OK](#url_ok), en caso de éxito o [URL_ERROR](#url_error), en caso de que por algún motivo el formulario rechace el pago)
 
 Si, por ejemplo, se pasa mal el <strong>MerchantID</strong> se obtendrá la siguiente respuesta:
+
 ```python
 {'StatusMessage': ERROR: Cuenta Inexistente, 'StatusCode': 702}
 
 ```
+
+<a name="datosadicionales"></a>
+## Datos adicionales para control de fraude
+Los datos adicionales para control de fraude son **obligatorios** para la operatoria con TodoPago.
+
+**Parámetros Generales:**
+<table>
+  <tr>
+    <th>Parámetro</th>
+    <th>Requerido</th>
+    <th>Descripción</th>
+    <th>Descripción</th>
+    <th>Valores posibles</th>
+  </tr>
+  <tr>
+    <td><b>CSBTCITY</b></td>
+    <td>Sí</td>
+    <td>Ciudad de facturación</td>
+    <td>Alfanumérico de 50 caracteres.</td>
+    <td>Ejemplo: Villa General Belgrano</td>
+  </tr>
+  <tr>
+    <td><b>CSBTCOUNTRY</b></td>
+    <td>Sí</td>
+    <td>País de facturación</td>
+    <td>Alfanumérico de 2 caracteres.</td>
+    <td>Código ISO</td>
+  </tr>
+  <tr>
+    <td><b>CSBTCUSTOMERID</b></td>
+    <td>Si</td>
+    <td>Identificador del usuario al que se le emite la factura. No puede contener un correo electrónico</td>
+    <td>Alfanumérico de 50 caracteres.</td>
+    <td>Ejemplos:
+A.Carlos
+453458</td>
+  </tr>
+  <tr>
+    <td><b>CSBTIPADDRESS</b></td>
+    <td>Sí</td>
+    <td>IP de la PC del comprador </td>
+    <td>Alfanumérico de 15 caracteres.</td>
+    <td>Ejemplo: 10.1.27.63</td>
+  </tr>
+  <tr>
+    <td><b>CSBTEMAIL</b></td>
+    <td>Si</td>
+    <td>Mail del usuario al que se le emite la factura</td>
+    <td>Alfanumérico de 100 caracteres.</td>
+    <td>Ejemplo: todopago@hotmail.com</td>
+  </tr>
+  <tr>
+    <td><b>CSBTFIRSTNAME</b></td>
+    <td>Si</td>
+    <td>Nombre del usuario al que se le emite la factura</td>
+    <td>Alfanumérico de 60 caracteres.</td>
+    <td>Ejemplo: Juan</td>
+  </tr>
+  <tr>
+    <td><b>CSBTLASTNAME</b></td>
+    <td>Si</td>
+    <td>Apellido del usuario al que se le emite la factura</td>
+    <td>Alfanumérico de 60 caracteres.</td>
+    <td>Ejemplo: Perez</td>
+  </tr>
+  <tr>
+    <td><b>CSBTPHONENUMBER</b></td>
+    <td>Si</td>
+    <td>Teléfono del usuario al que se le emite la factura. No utilizar guiones, puntos o espacios. Incluir código de país</td>
+    <td>Alfanumérico de 15 caracteres.</td>
+    <td>Ejemplo: 541160913988</td>
+  </tr>
+  <tr>
+    <td><b>CSBTPOSTALCODE</b></td>
+    <td>Si</td>
+    <td>Código Postal de la dirección de facturación</td>
+    <td>Alfanumérico de 10 caracteres.</td>
+    <td>Ejemplo: C1010AAP ó 1010</td>
+  </tr>
+  <tr>
+    <td><b>CSBTSTATE</b></td>
+    <td>Si</td>
+    <td>Provincia de la dirección de facturación</td>
+    <td>Alfanumérico de 2 caracteres.</td>
+    <td><a href="#tablareferencia">Ver Provincias</a>
+Ejemplo: Enviar C si corresponde a CABA</td>
+  </tr>
+  <tr>
+    <td><b>CSBTSTREET1</b></td>
+    <td>Si</td>
+    <td>Domicilio de facturación (Calle Numero interior Numero Exterior)</td>
+    <td>Alfanumérico de 60 caracteres.</td>
+    <td>Ejemplo: Cerrito 740 piso 8</td>
+  </tr>
+  <tr>
+    <td><b>CSBTSTREET2</b></td>
+    <td>No</td>
+    <td>Localidad</td>
+    <td>Alfanumérico de 60 caracteres.</td>
+    <td>Ejemplo: CABA</td>
+  </tr>
+  <tr>
+    <td><b>CSPTCURRENCY</b></td>
+    <td>Si</td>
+    <td>Moneda</td>
+    <td>Alfanumérico de 5 caracteres.</td>
+    <td>Ejemplo: ARS</td>
+  </tr>
+  <tr>
+    <td><b>CSPTGRANDTOTALAMOUNT</b></td>
+    <td>Si</td>
+    <td>"999999.CC"
+Con decimales obligatorios, usando el puntos como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales.</td>
+    <td>Numérico de 15 posiciones</td>
+    <td>Ejemplos:
+$125,38 -> 125.38
+$12 -> 12.00</td>
+  </tr>
+  <tr>
+    <td><b>CSMDD6</b></td>
+    <td>No</td>
+    <td>Canal de venta</td>
+    <td>Alfanumérico de 255 caracteres.</td>
+    <td>Valores posibles: Web, Mobile, Telefonica</td>
+  </tr>
+  <tr>
+    <td><b>CSMDD7</b></td>
+    <td>No</td>
+    <td>Cantidad de días que está registrado el cliente en el sitio del comercio.</td>
+    <td>Alfanumérico de 255 caracteres.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSMDD8</b></td>
+    <td>No</td>
+    <td>Para indicar si el usuario está comprando como invitado en la página del comercio. En caso de ser "S", el campo CSMDD9 no deberá enviarse.</td>
+    <td>Valor Booleano</td>
+    <td>Valores posibles (S/N)</td>
+  </tr>
+  <tr>
+    <td><b>CSMDD9</b></td>
+    <td>No</td>
+    <td>Valor del password del usuario registrado en el portal del comercio. Incluir el valor en hash</td>
+    <td>Alfanumérico de 255 caracteres.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSMDD10</b></td>
+    <td>No</td>
+    <td>Cantidad de transacciones realizadas por el mismo usuario registrado en el portal del comercio (Num transacciones)</td>
+    <td>Alfanumérico de 255 caracteres.</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSMDD11</b></td>
+    <td>No</td>
+    <td>Celular del cliente</td>
+    <td>Alfanumérico de 255 caracteres.</td>
+    <td></td>
+  </tr>
+</table>
+
+**Parámetros del vertical "Retail":**
+<table>
+  <tr>
+    <th>Parámetro</th>
+    <th>Requerido</th>
+    <th>Descripción</th>
+    <th>Descripción</th>
+    <th>Valores posibles</th>
+  </tr>
+  <tr>
+    <td><b>CSSTCITY</b></td>
+    <td>Si</td>
+    <td>Ciudad de envío de la orden</td>
+    <td>Alfanumérico de 50 caracteres</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSSTCOUNTRY</b></td>
+    <td>Si</td>
+    <td>País de envío de la orden</td>
+    <td>Alfanumérico de 2 caracteres</td>
+    <td>Código ISO</td>
+  </tr>
+  <tr>
+    <td><b>CSSTEMAIL</b></td>
+    <td>Si</td>
+    <td>Correo electrónico del comprador</td>
+    <td>Alfanumérico de 100 caracteres</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSSTFIRSTNAME</b></td>
+    <td>Si</td>
+    <td>Nombre de la persona que recibe el producto</td>
+    <td>Alfanumérico de 60 caracteres</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSSTLASTNAME</b></td>
+    <td>Si</td>
+    <td>Apellido de la persona que recibe el producto</td>
+    <td>Alfanumérico de 60 caracteres</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSSTPHONENUMBER</b></td>
+    <td>Si</td>
+    <td>Número de teléfono del destinatario</td>
+    <td>Alfanumérico de 15 caracteres</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSSTPOSTALCODE</b></td>
+    <td>Si</td>
+    <td>Código postal del domicilio de envío</td>
+    <td>Alfanumérico de 10 caracteres</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSSTSTATE</b></td>
+    <td>Si</td>
+    <td>Provincia de envío</td>
+    <td>Alfanumérico de 2 caracteres</td>
+    <td>Es un carácter. <a href="#tablareferencia">Ver Provincias</a></td>
+  </tr>
+  <tr>
+    <td><b>CSSTSTREET1</b></td>
+    <td>Si</td>
+    <td>Domicilio de envío</td>
+    <td>Alfanumérico de 60 caracteres</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSSTSTREET2</b></td>
+    <td>No</td>
+    <td>Localidad de envío</td>
+    <td>Alfanumérico de 60 caracteres</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSMDD12</b></td>
+    <td>No</td>
+    <td>Cantidad de días que tiene el comercio para hacer la entrega</td>
+    <td>Alfanumérico de 255 caracteres</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSMDD13</b></td>
+    <td>No</td>
+    <td>Método de Despacho</td>
+    <td>Alfanumérico de 255 caracteres</td>
+    <td>Valores posibles:  storepickup, deliverypropio, deliverycarrier <br>
+    Notas:  deliverypropio: envío realizado con operador logístico propio.
+    deliverycarrier: envío realizado con operador logístico tercerizado (ej. Andreani).
+    </td>
+    </tr>
+  <tr>
+    <td><b>CSMDD14</b></td>
+    <td>No</td>
+    <td>Valor booleano para identificar si el cliente requiere un comprobante fiscal o no S / N</td>
+    <td>Valor Booleano</td>
+    <td>S/N</td>
+  </tr>
+  <tr>
+    <td><b>CSMDD15</b></td>
+    <td>No</td>
+    <td>CustomerLoyalityNumber - número de cliente frecuente</td>
+    <td>Alfanumérico de 255 caracteres</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td><b>CSMDD16</b></td>
+    <td>No</td>
+    <td>Promotional / CouponCode - número de cupón de descuento</td>
+    <td>Alfanumérico de 255 caracteres</td>
+    <td></td>
+  </tr>
+</table>
+
+**Datos a enviar por cada producto, los valores deben estar separados con "#":**
+
+<table>
+  <tr>
+    <th><b>Parámetro</b></th>
+    <th>Requerido</th>
+    <th>Descripción</th>
+    <th>Descripción</th>
+    <th>Valores posibles</th>
+  </tr>
+  <tr>
+    <td><b>CSITPRODUCTCODE</b></td>
+    <td>Condicional</td>
+    <td>Categoria del producto</td>
+    <td>Alfanumérico de 255 caracteres</td>
+    <td>Valor por defecto: default</td>
+  </tr>
+  <tr>
+    <td><b>CSITPRODUCTDESCRIPTION</b></td>
+    <td>Condicional</td>
+    <td>Descripción del producto </td>
+    <td>Alfanumérico de 255 caracteres</td>
+    <td>NOTEBOOK L845 SP4304LA DF TOSHIBA 4GB RAM 233 MHZ</td>
+  </tr>
+  <tr>
+    <td><b>CSITPRODUCTNAME</b></td>
+    <td>Condicional</td>
+    <td>Nombre del producto</td>
+    <td>Alfanumérico de 255 caracteres</td>
+    <td>NOTEBOOK L845 SP4304LA DF TOSHIBA</td>
+  </tr>
+  <tr>
+    <td><b>CSITPRODUCTSKU</b></td>
+    <td>Condicional</td>
+    <td>Código identificador del producto</td>
+    <td>Alfanumérico de 255 caracteres</td>
+    <td>Ejemplo: LEVJNSL36GN</td>
+  </tr>
+  <tr>
+    <td><b>CSITTOTALAMOUNT</b></td>
+    <td>Condicional</td>
+    <td>CSITTOTALAMOUNT = CSITUNITPRICE * CSITQUANTITY
+"999999.CC"
+Es mandatorio informar los decimales, usando el punto como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales.</td>
+    <td>Numérico</td>
+    <td>Ejemplos:
+$125,38 -> 125.38
+$12 -> 12.00</td>
+  </tr>
+  <tr>
+    <td><b>CSITQUANTITY</b></td>
+    <td>Condicional</td>
+    <td>Cantidad del producto</td>
+    <td>Numérico</td>
+    <td>Ejemplo: 1</td>
+  </tr>
+  <tr>
+    <td><b>CSITUNITPRICE</b></td>
+    <td>Condicional</td>
+    <td>"999999.CC"
+Es mandatorio informar los decimales, usando el punto como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales.</td>
+    <td>Numérico</td>
+    <td>Ejemplos:
+$125,38 -> 125.38
+$12 ->  12.00</td>
+  </tr>
+</table>
+
+```python
+
+optionsSAR_operacion={
+'CSBTCITY': "Villa General Belgrano", #Ciudad de facturación, #MANDATORIO.
+'CSBTCOUNTR': "AR", #País de facturación. MANDATORIO. Código ISO. (http://apps.cybersource.com/library/documentation/sbc/quickref/countries_alpha_list.pdf)
+'CSBTCUSTOMERID': "453458", #Identificador del usuario al que se le emite la factura. MANDATORIO. No puede contener un correo electrónico.
+'CSBTIPADDRESS': "192.0.0.4", #IP de la PC del comprador. MANDATORIO.
+'CSBTEMAIL' : "some@someurl.com", #Mail del usuario al que se le emite la factura. MANDATORIO.
+'CSBTFIRSTNAME': "Juan", #Nombre del usuario al que se le emite la factura. MANDATORIO.
+'CSBTLASTNAME': "Perez", #Apellido del usuario al que se le emite la factura. MANDATORIO.
+'CSBTPHONENUMBER': "541160913988", #Teléfono del usuario al que se le emite la factura. No utilizar guiones, puntos o espacios. Incluir código de país. MANDATORIO.
+'CSBTPOSTALCODE': "1010", #Código Postal de la dirección de facturación. MANDATORIO.
+'CSBTSTATE': "B",  #Provincia de la dirección de facturación. MANDATORIO. Ver tabla anexa de provincias.
+'CSBTSTREET1' : "Some Street 2153", #Domicilio de facturación (calle y nro). MANDATORIO.
+'CSBTSTREET2' :"Piso 8", #Complemento del domicilio. (piso, departamento). NO MANDATORIO.
+'CSPTCURRENCY': "ARS",  #Moneda. MANDATORIO.
+'CSPTGRANDTOTALAMOUNT': "10.01", #Con decimales opcional usando el puntos como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales. MANDATORIO. (Ejemplos:$125,38-> 125.38 $12-> 12 o 12.00)
+'CSMDD7':"", # Fecha registro comprador(num Dias). NO MANDATORIO.
+'CSMDD8':"", #Usuario Guest? (Y/N). En caso de ser Y, el campo CSMDD9 no deberá enviarse. NO MANDATORIO.
+'CSMDD9':"", #Customer password Hash: criptograma asociado al password del comprador final. NO MANDATORIO.
+'CSMDD10':"", #Histórica de compras del comprador (Num transacciones). NO MANDATORIO.
+'CSMDD11':"", #Customer Cell Phone. NO MANDATORIO.
+
+#Retail
+'CSSTCITY':"Villa General Belgrano",  #Ciudad de enví­o de la orden. MANDATORIO.
+'CSSTCOUNTRY':"AR", #País de envío de la orden. MANDATORIO.
+'CSSTEMAIL': "some@someurl.com", #Mail del destinatario, MANDATORIO.
+'CSSTFIRSTNAME':"Jose", #Nombre del destinatario. MANDATORIO.
+'CSSTLASTNAME':"Perez", #Apellido del destinatario. MANDATORIO.
+'CSSTPHONENUMBER':"541155893737", #Número de teléfono del destinatario. MANDATORIO.
+'CSSTPOSTALCODE':"1010", #Código postal del domicilio de envío. MANDATORIO.
+'CSSTSTATE':"B", #Provincia de envío. MANDATORIO. Son de 1 caracter
+'CSSTSTREET1':"Some Street 2153", #Domicilio de envío. MANDATORIO.
+
+'CSITPRODUCTCODE':"electronic_good", #Código de producto. CONDICIONAL. Valores posibles(adult_content;coupon;default;electronic_good;electronic_software;gift_certificate;handling_only;service;shipping_and_handling;shipping_only;subscription)
+'CSITPRODUCTDESCRIPTION':"Test Prd Description", #Descripción del producto. CONDICIONAL.
+'CSITPRODUCTNAME':"TestPrd", #Nombre del producto. CONDICIONAL.
+'CSITPRODUCTSKU':"SKU1234", #Código identificador del producto. CONDICIONAL.
+'CSITTOTALAMOUNT':"10.01", #CSITTOTALAMOUNT=CSITUNITPRICE*CSITQUANTITY "999999[.CC]" Con decimales opcional usando el puntos como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales. CONDICIONAL.
+'CSITQUANTITY':"1", #Cantidad del producto. CONDICIONAL.
+'CSITUNITPRICE': "10.01", #Formato Idem CSITTOTALAMOUNT. CONDICIONAL.
+
+'CSMDD12':"" #Shipping, DeadLine (Num Dias). NO MADATORIO.
+'CSMDD13':"", #Método de Despacho. NO MANDATORIO.
+'CSMDD14':"", #Customer requires Tax Bill ? (Y/N). NO MANDATORIO.
+'CSMDD15':"", #Customer Loyality Number. NO MANDATORIO.
+'CSMDD16':"", #Promotional / Coupon Code. NO MANDATORIO. #Retail: datos a enviar por cada producto, los valores deben estar separado con #
+}
+```
+<a name="opcionesadicionales"></a>
+#### Opciones adicionales
+Dentro del parámetro *$optionsSAR_operacion* pueden enviarse opciones adicionales que habilitan características para esa transacción en particular. A continuación se describen las mismas
+
+<a name="coutas"></a>
+##### Rango de Cuotas
+Es posible setear el rango de cuotas a mostrar en el formulario entre un mínimo y un máximo, enviando los siguientes parametros adicionales
+
+<table>
+  <tr>
+    <th>Campo</th>
+    <th>Requerido</th>
+    <th>Descripción</th>
+    <th>Tipo de Dato</th>
+    <th>Valores posibles / Ejemplo</th>
+  </tr>
+  <tr>
+    <td><b>MININSTALLMENTS</b></td>
+    <td>No</td>
+    <td>Mínimo de cuotas a mostrar en el formulario</td>
+    <td>Numérico</td>
+    <td>3</td>
+  </tr>
+  <tr>
+    <td><b>MAXINSTALLMENTS</b></td>
+    <td>No</td>
+    <td>Máximo de cuotas a mostrar en el formulario</td>
+    <td>Numérico</td>
+    <td>9</td>
+  </tr>  
+</table>
+
+<a name="timeout"></a>
+##### Tiempo de vida de la transacción
+Es posible setear el tiempo máximo disponible para que el cliente complete el pago en el formulario, el valor por defecto es de 30 minutos. El rango posible es de 5 minutos a 6 horas. Los valores deben ser expresados en milisegundos
+
+<table>
+  <tr>
+    <th>Campo</th>
+    <th>Requerido</th>
+    <th>Descripción</th>
+    <th>Tipo de Dato</th>
+    <th>Valores posibles / Ejemplo</th>
+  </tr>
+  <tr>
+    <td><b>TIMEOUT</b></td>
+    <td>No</td>
+    <td>Tiempo de vida de la transacción en milisegundos</td>
+    <td>Numérico</td>
+    <td>1800000</td>
+  </tr>
+</table>
+
+[<sub>Volver a inicio</sub>](#inicio)
+
 <a name="confirmatransaccion"></a>
-####Confirmación de transacción.		
-En este caso hay que llamar a **getAuthorizeAnswer()**, enviando como parámetro un diccionario como se describe a continuación.	
+#### Confirmación de transacción.
+
+En este caso hay que llamar a **getAuthorizeAnswer()**, enviando como parámetro un diccionario como se describe a continuación.
 
 <table>
   <tr>
@@ -328,28 +792,27 @@ En este caso hay que llamar a **getAuthorizeAnswer()**, enviando como parámetro
   </tr>
 </table>
 
-	
-```python		
-{		
-		'Security': '1234567890ABCDEF1234567890ABCDEF', // Token de seguridad, provisto por TODO PAGO. MANDATORIO.		
-		'Merchant'   : '12345678',		
-		'RequestKey' : '0123-1234-2345-3456-4567-5678-6789',		
-		'AnswerKey'  : '1111-2222-3333-4444-5555-6666-7777' // *Importante		
-}		
-```		
+```python
+{
+		'Security': '1234567890ABCDEF1234567890ABCDEF', // Token de seguridad, provisto por TODO PAGO. MANDATORIO.
+		'Merchant'   : '12345678',
+		'RequestKey' : '0123-1234-2345-3456-4567-5678-6789',
+		'AnswerKey'  : '1111-2222-3333-4444-5555-6666-7777' // *Importante
+}
+```
 
 Se deben guardar y recuperar los valores de los campos <strong>RequestKey</strong> y <strong>AnswerKey</strong>.
 
 El parámetro <strong>RequestKey</strong> es siempre distinto y debe ser persistido de alguna forma cuando el comprador es redirigido al formulario de pagos.
 
-<ins><strong>Importante</strong></ins> El campo **AnswerKey** se adiciona  en la redirección que se realiza a alguna de las direcciones ( URL ) epecificadas en el  servicio **SendAurhorizationRequest**, esto sucede cuando la transacción ya fue resuelta y es necesario regresar al site para finalizar la transacción de pago, también se adiciona el campo Order, el cual tendrá el contenido enviado en el campo **OPERATIONID**. Para nuestro ejemplo: <strong>http://susitio.com/paydtodopago/ok?Order=27398173292187&Answer=1111-2222-3333-4444-5555-6666-7777</strong>		
+<ins><strong>Importante</strong></ins> El campo **AnswerKey** se adiciona  en la redirección que se realiza a alguna de las direcciones ( URL ) epecificadas en el  servicio **SendAurhorizationRequest**, esto sucede cuando la transacción ya fue resuelta y es necesario regresar al site para finalizar la transacción de pago, también se adiciona el campo Order, el cual tendrá el contenido enviado en el campo **OPERATIONID**. Para nuestro ejemplo: <strong>http://susitio.com/paydtodopago/ok?Order=27398173292187&Answer=1111-2222-3333-4444-5555-6666-7777</strong>
 
 <table>
 <tr><td>Campo</td><td>Requerido</td><td>Descripción</td><td>Tipo de Dato</td><td>Valores posibles / Ejemplo</td></tr>
 <tr><td>**StatusCode** </td><td>Si</td><td>Código de estado o valor de retorno del Servicio</td><td>Numèrico de 5 posiciones</td><td> <b>-1 -> OK<br> 0 a 99999 o vacío -> error</b></td></tr>
 <tr><td>**StatusMessage**</td><td>Si</td><td>Descripción del código de retorno o estado del servicio</td><td>Alfanumérico hasta 256</td><td>-</td></tr>
 <tr><td>**AuthorizationKey**</td><td>No</td><td>Identificador Privado de la Respuesta</td><td>Alfanumérico hasta 256 caracteres</td><td>-</td></tr>
-<tr><td>**EncodingMethod**</td><td>No</td><td>Especifica el tipo codificación que se usa para los datos de la transacciones de pagos</td><td>Alfanumérico hasta 16 caracteres</td><td>XML</td></tr>
+<tr><td>**EncodingMethod**</td><td>No</td><td>Especifica el tipo codificación que se usa para los datos de las transacciones de pagos</td><td>Alfanumérico hasta 16 caracteres</td><td>XML</td></tr>
 <tr><td>**Payload**</td><td>No</td><td>Documento codificado  en el  formato especificado en el campo EncodingMethod  el cual contiene los datos de la transacción ejecutada</td><td>Alfanumérico hasta 2048 caracteres</td><td>-</td></tr></table>
 
 <table>
@@ -365,184 +828,57 @@ El parámetro <strong>RequestKey</strong> es siempre distinto y debe ser persist
 <tr><td>**INSTALLMENTPAYMENTS**</td><td>No</td><td>Cantidad de cuotas elegidas para la operación</td><td>Numérico</td><td> Ejemplo: 03</td></tr>
 <tr><td>**AMOUNTBUYER**</td><td>Si</td><td>Monto final (incluyendo Costo Financiero) pagado por el comprador</td><td>Decimal</td><td> Ejemplo: 129.68</td></tr>
 </table>
-		
-```python		
-{	
-  'StatusCode'       : -1, 		
-  'StatusMessage'    : 'APROBADA',		
-  'AuthorizationKey' : '1294-329E-F2FD-1AD8-3614-1218-2693-1378',		
-  'EncodingMethod'   : 'XML',		
-  'Payload'          : 		
-    {		
-      'Answer' : 		
-         {		
-          'DATETIME'               : '2014/08/11 15:24:38',		
-          'RESULTCODE'             : '-1',		
-          'RESULTMESSAGE'          : 'APROBADA',		
-          'CURRENCYNAME'           : 'Pesos',		
-          'PAYMENTMETHODNAME'      : 'VISA',		
-          'TICKETNUMBER'           : '12',		
-          'CARDNUMBERVISIBLE'      : '450799******4905',		
-          'AUTHORIZATIONCODE'      : 'TEST38', 
-          'INSTALLMENTPAYMENTS'    : '6' }, 
-      'Request' : 		
+
+```python
+{
+  'StatusCode'       : -1,
+  'StatusMessage'    : 'APROBADA',
+  'AuthorizationKey' : '1294-329E-F2FD-1AD8-3614-1218-2693-1378',
+  'EncodingMethod'   : 'XML',
+  'Payload'          :
+    {
+      'Answer' :
+         {
+          'DATETIME'               : '2014/08/11 15:24:38',
+          'RESULTCODE'             : '-1',
+          'RESULTMESSAGE'          : 'APROBADA',
+          'CURRENCYNAME'           : 'Pesos',
+          'PAYMENTMETHODNAME'      : 'VISA',
+          'TICKETNUMBER'           : '12',
+          'CARDNUMBERVISIBLE'      : '450799******4905',
+          'AUTHORIZATIONCODE'      : 'TEST38',
+          'INSTALLMENTPAYMENTS'    : '6' },
+      'Request' :
         {
-          'MERCHANT'               : '12345678',		
-          'OPERATIONID'            : 'ABCDEF-1234-12221-FDE1-00000012',		
-          'AMOUNT'                 : '1.00',		
+          'MERCHANT'               : '12345678',
+          'OPERATIONID'            : 'ABCDEF-1234-12221-FDE1-00000012',
+          'AMOUNT'                 : '1.00',
           'CURRENCYCODE'           : '032',
           'AMOUNTBUYER'            : '1.20'
-          }		
-```		
+          }
+    }
+}
+```
 Nota: El campo AMOUNTBUYER corresponde al monto pagado por el comprador, que incluye el costo financiero total.
 
-Este método devuelve el resumen de los datos de la transacción.		
+Este método devuelve el resumen de los datos de la transacción.
 
 Si se pasa mal el <strong>AnswerKey</strong> o el <strong>RequestKey</strong> se verá el siguiente rechazo:
 
 ```python
 {
   'StatusCode' :  404
-  'StatusMessage' : string 'ERROR: Transaccion Inexistente'}
+  'StatusMessage' : string 'ERROR: Transaccion Inexistente'
+}
 ```
 
 [<sub>Volver a inicio</sub>](#inicio)
-<br>
-
-<a name="datosadicionales"></a>		
-## Datos adicionales para control de fraude		
-Los datos adicionales para control de fraude son **obligatorios**, de lo contrario baja el score de la transacción.
-
-Los campos marcados como **condicionales** afectan al score negativamente si no son enviados, pero no son mandatorios o bloqueantes.
-
-````python	
-optionsSAR_operacion={ 				
-'CSBTCITY': "Villa General Belgrano", #Ciudad de facturación, #MANDATORIO.		
-'CSBTCOUNTR': "AR", #País de facturación. MANDATORIO. Código ISO. (http://apps.cybersource.com/library/documentation/sbc/quickref/countries_alpha_list.pdf)		
-'CSBTCUSTOMERID': "453458", #Identificador del usuario al que se le emite la factura. MANDATORIO. No puede contener un correo electrónico.		
-'CSBTIPADDRESS': "192.0.0.4", #IP de la PC del comprador. MANDATORIO.		
-'CSBTEMAIL' : "some@someurl.com", #Mail del usuario al que se le emite la factura. MANDATORIO.		
-'CSBTFIRSTNAME': "Juan", #Nombre del usuario al que se le emite la factura. MANDATORIO.		
-'CSBTLASTNAME': "Perez", #Apellido del usuario al que se le emite la factura. MANDATORIO.		
-'CSBTPHONENUMBER': "541160913988", #Teléfono del usuario al que se le emite la factura. No utilizar guiones, puntos o espacios. Incluir código de país. MANDATORIO.		
-'CSBTPOSTALCODE': "1010", #Código Postal de la dirección de facturación. MANDATORIO.		
-'CSBTSTATE': "B",  #Provincia de la dirección de facturación. MANDATORIO. Ver tabla anexa de provincias.		
-'CSBTSTREET1' : "Some Street 2153", #Domicilio de facturación (calle y nro). MANDATORIO.		
-'CSBTSTREET2' :"Piso 8", #Complemento del domicilio. (piso, departamento). NO MANDATORIO.		
-'CSPTCURRENCY': "ARS",  #Moneda. MANDATORIO.		
-'CSPTGRANDTOTALAMOUNT': "10.01", #Con decimales opcional usando el puntos como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales. MANDATORIO. (Ejemplos:$125,38-> 125.38 $12-> 12 o 12.00)
-'CSMDD7':"", # Fecha registro comprador(num Dias). NO MANDATORIO.		
-'CSMDD8':"", #Usuario Guest? (Y/N). En caso de ser Y, el campo CSMDD9 no deberá enviarse. NO MANDATORIO.	
-'CSMDD9':"", #Customer password Hash: criptograma asociado al password del comprador final. NO MANDATORIO.	
-'CSMDD10':"", #Histórica de compras del comprador (Num transacciones). NO MANDATORIO.		
-'CSMDD11':"", #Customer Cell Phone. NO MANDATORIO.		
-
-#Retail
-'CSSTCITY':"Villa General Belgrano",  #Ciudad de enví­o de la orden. MANDATORIO.		
-'CSSTCOUNTRY':"AR", #País de envío de la orden. MANDATORIO.		
-'CSSTEMAIL': "some@someurl.com", #Mail del destinatario, MANDATORIO.		
-'CSSTFIRSTNAME':"Jose", #Nombre del destinatario. MANDATORIO.		
-'CSSTLASTNAME':"Perez", #Apellido del destinatario. MANDATORIO.		
-'CSSTPHONENUMBER':"541155893737", #Número de teléfono del destinatario. MANDATORIO.		
-'CSSTPOSTALCODE':"1010", #Código postal del domicilio de envío. MANDATORIO.		
-'CSSTSTATE':"B", #Provincia de envío. MANDATORIO. Son de 1 caracter		
-'CSSTSTREET1':"Some Street 2153", #Domicilio de envío. MANDATORIO.		
-
-'CSITPRODUCTCODE':"electronic_good", #Código de producto. CONDICIONAL. Valores posibles(adult_content;coupon;default;electronic_good;electronic_software;gift_certificate;handling_only;service;shipping_and_handling;shipping_only;subscription)		
-'CSITPRODUCTDESCRIPTION':"Test Prd Description", #Descripción del producto. CONDICIONAL.	
-'CSITPRODUCTNAME':"TestPrd", #Nombre del producto. CONDICIONAL.		
-'CSITPRODUCTSKU':"SKU1234", #Código identificador del producto. CONDICIONAL.		
-'CSITTOTALAMOUNT':"10.01", #CSITTOTALAMOUNT=CSITUNITPRICE*CSITQUANTITY "999999[.CC]" Con decimales opcional usando el puntos como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales. CONDICIONAL.		
-'CSITQUANTITY':"1", #Cantidad del producto. CONDICIONAL.		
-'CSITUNITPRICE': "10.01", #Formato Idem CSITTOTALAMOUNT. CONDICIONAL.		
-
-'CSMDD12':"" #Shipping, DeadLine (Num Dias). NO MADATORIO.		
-'CSMDD13':"", #Método de Despacho. NO MANDATORIO.		
-'CSMDD14':"", #Customer requires Tax Bill ? (Y/N). NO MANDATORIO.		
-'CSMDD15':"", #Customer Loyality Number. NO MANDATORIO. 		
-'CSMDD16':"", #Promotional / Coupon Code. NO MANDATORIO. #Retail: datos a enviar por cada producto, los valores deben estar separado con #:		
-		
-```
-<a name="datosreferencia"></a>    
-#### Datos de referencia   
-
-<table style="max-width:200px;">
-<tr><th>Nombre del campo</th><th>Required/Optional</th><th>Data Type</th><th>Mínimo</th><th>Comentarios</th></tr>
-<tr><td style="max-width:200px;">CSBTCITY</td><td>Required</td><td>String (50)</td><td>1</td><td>Ciudad / Debe comenzar con una letra</td></tr>
-<tr><td>CSBTCOUNTRY</td><td>Required</td><td>String (2)</td><td>1</td><td>Código ISO</td></tr>
-<tr><td> CSBTCUSTOMERID</td><td>Required</td><td>String (50)</td><td>1</td><td>Identificador del usuario unico logueado al portal (No puede ser una direccion de email)</td></tr>
-<tr><td> CSBTEMAIL</td><td>Required</td><td>String (100)</td><td>1</td><td>Correo electrónico del comprador con formato válido (solo letras (a-z), números, puntos y sin espacios).</td></tr>
-<tr><td>CSBTFIRSTNAME</td><td>Required</td><td>String (60)</td><td>1</td><td>Nombre del tarjeta habiente / Sin caracteres especiales como acentos invertidos, sólo letras, números y espacios</td></tr>
-<tr><td>CSBTIPADDRESS</td><td>Required</td><td>String (15)</td><td>1</td><td>"End Customer´s IP address, such as 10.1.27.63, reported by your Web server via socket information."</td></tr>
-<tr><td> CSBTLASTNAME</td><td>Required</td><td>String (60)</td><td>1</td><td>Apellido del tarjetahabiente / Sin caracteres especiales como acentos invertidos, sólo letras, números y espacios</td></tr> 
-<tr><td>CSBTPHONENUMBER</td><td>Required</td><td>String (15)</td><td>6</td><td>Número de telefono</td></tr>
-<tr><td>CSBTPOSTALCODE</td><td>Required</td><td>String (10)</td><td>1</td><td>Codigo Postal</td></tr> 
-<tr><td>CSBTSTATE</td><td>Required</td><td>String (2)</td><td>1</td><td>Estado (Si el country = US, el campo se valida para un estado valido en USA)</td></tr>
-<tr><td>CSBTSTREET1</td><td>Required</td><td>String (60)</td><td>1</td><td>Calle Numero interior Numero Exterior</td></tr> 
-<tr><td>CSBTSTREET2</td><td>Optional</td><td>String (60)</td><td></td><td>Barrio</td></tr>
-<tr><td>CSITPRODUCTCODE</td><td>Conditional</td><td>String (255)</td><td></td><td></td> </tr>
-<tr><td>CSITPRODUCTDESCRIPTION</td><td>Conditional</td><td>String (255)</td><td></td><td>Descripción general del producto</td></tr> 
-<tr><td>CSITPRODUCTNAME</td><td>Conditional</td><td>String (255)</td><td></td><td>Nombre en catalogo del producto</td></tr>
-<tr><td>CSITPRODUCTSKU</td><td>Conditional</td><td>String (255)</td><td></td><td>SKU en catalogo</td></tr> 
-<tr><td>CSITQUANTITY</td><td>Conditional</td><td>Integer (10)</td><td></td><td>Cantidad productos del mismo tipo agregados al carrito</td></tr> 
-<tr><td>CSITTOTALAMOUNT</td><td>Conditional</td><td></td><td></td><td>"Precio total = Precio unitario * quantity / CSITTOTALAMOUNT = CSITUNITPRICE * CSITQUANTITY ""999999.CC"" Es mandatorio informar los decimales, usando el punto como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales."</td></tr>
-<tr><td>CSITUNITPRICE</td><td>Conditional</td><td>String (15)</td><td></td><td>"Precio Unitaro del producto / ""999999.CC"" Es mandatorio informar los decimales, usando el punto como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales."</td></tr> 
-<tr><td>CSPTCURRENCY</td><td>Required</td><td>String (5)</td><td>1</td><td>Currencies=>'032'(Peso Argentino)</td></tr> 
-<tr><td>CSPTGRANDTOTALAMOUNT</td><td>Required</td><td>Decimal (15)</td><td>1</td><td>"Cantidad total de la transaccion./""999999.CC"" Con decimales obligatorios, usando el puntos como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales."</td></tr> 
-<tr><td>CSSTCITY</td><td>Required</td><td>String (50)</td><td>1</td><td>Ciudad / Debe comenzar con una letra</td>
-<tr><td> CSSTCOUNTRY</td><td>Required</td><td>String (2)</td><td>1</td><td>Código ISO</td></tr>
-<tr><td>CSSTEMAIL</td><td>Required</td><td>String (100)</td><td>1</td><td>Correo electrónico del comprador con formato válido (solo letras (a-z), números, puntos y sin espacios).</td></tr> 
-<tr><td>CSSTFIRSTNAME</td><td>Required</td><td>String (60)</td><td>1</td><td>Nombre del tarjeta habiente / Sin caracteres especiales como acentos invertidos, sólo letras, números y espacios</td></tr> 
-<tr><td>CSSTLASTNAME</td><td>Required</td><td>String (60)</td><td>1</td><td>Apellido del tarjetahabiente / Sin caracteres especiales como acentos invertidos, sólo letras, números y espacios</td></tr> 
-<tr><td>CSSTPHONENUMBER</td><td>Required</td><td>String (15)</td><td>6</td><td>"Número de telefono. Cuidar el hecho que por default algunos comercios envían ""54"", contando entonces con 2 de los 6 caracteres requeridos."</td></tr> 
-<tr><td>CSSTPOSTALCODE</td><td>Required</td><td>String (10)</td><td>1</td><td>Código Postal</td></tr>
-<tr><td>CSSTSTATE</td><td>Required</td><td>String (2)</td><td>1</td><td>Estado (Si el country = US, el campo se valida para un estado v lido en USA)</td><tr> 
-<tr><td>CSSTSTREET1</td><td>Required</td><td>String (60)</td><td>1</td><td>Calle Numero interior Numero Exterior / Para los casos que no son de envío a domicilio, jam s enviar la dirección propia del comercio o correo donde se retire la mercadería, en ese caso replicar los datos de facturación.</td></tr>
-<tr><td> CSSTSTREET2</td><td>Optional</td><td>String (60)</td><td></td><td>Barrio</td></tr> 
-<tr><td>CSMDD1 </td><td>Required</td><td>String (255)</td><td>1</td><td>Incluir numero de comercio proveniente del campo NROCOMERCIO del API DECIDIR</td></tr> 
-<tr><td>CSMDD2</td><td>Required</td><td>String (255)</td><td>1</td><td>Incluir el nombre del comercio, Decidir puede obtener este dato del portal de configuracion de comercios</td></tr>
-<tr><td> CSMDD3</td><td>Required (Catalogo)</td><td>String (255)</td><td>1</td><td>"Valores ejemplo: (retail, digital goods, services, travel, ticketing) Es recomendable que el API de decidir fije opciones seleccionables y no sean de captura libre para el comercio"</td></tr> 
-<tr><td>CSMDD4</td><td>Optional (Catalogo)</td><td>String (255)</td><td></td><td>"Valores ejemplo: (Visa, Master Card, Tarjeta Shopping, Banelco...) Es recomendable que el API de decidir fije opciones seleccionables y no sean de captura libre para el comercio. Se tienen que incluir todos los medios de pago aceptados"</td></tr>
-<tr><td> CSMDD5</td><td>Optional</td><td>String (255)</td><td></td><td>Valor numerico que detalle el numero de cuotas</td></tr>
-<tr><td>CSMDD6</td><td>Optional (Catalogo)</td><td>String (255)</td><td></td><td>"Valores ejemplo: (Web, Call Center, Mobile, Kiosko) Es recomendable que el API de decidir fije opciones seleccionables y no sean de captura libre para el comercio."</td></tr> 
-<tr><td>CSMDD7</td><td>Optional</td><td>String (255)</td><td></td><td>Numero de dias que tiene registrado un cliente en el portal del comercio.</td></tr>
-<tr><td>CSMDD8</td><td>Optional</td><td>String (255)</td><td></td><td>Valor Boleano para indicar si el usuario esta comprando como invitado en la pagina del comercio. Valores posibles (S/N)</td></tr> 
-<tr><td>CSMDD9</td><td>Optional</td><td>String (255)</td><td></td><td>Valor del password del usuario registrado en el portal del comercio. Incluir el valor en hash</td></tr> 
-<tr><td>CSMDD10</td><td>Optional</td><td>String (255)</td><td></td><td>Conteo de transacciones realizadas por el mismo usuario registrado en el portal del comercio</td></tr>
-<tr><td>CSMDD11</td><td>Optional</td><td>String (255)</td><td></td><td>Incluir numero de telefono adicional del comprador</td></tr> 
-<tr><td>CSMDD12</td><td>Optional</td><td>String (255)</td><td></td><td>Numero de dias que tiene el comercio para hacer la entrega</td></tr> 
-<tr><td>CSMDD13</td><td>Optional (Catalogo)</td><td>String (255)</td><td></td><td>"Valores ejemplo: (domicilio, click and collect, carrier) Es recomendable que el API de decidir fije opciones seleccionables y no sean de captura libre para el comercio."</td></tr> 
-<tr><td>CSMDD14</td><td>Optional</td><td>String (255)</td><td></td><td>Valor booleano para identificar si el cliente requiere un comprobante fiscal o no S / N</td></tr>
-<tr><td>CSMDD15</td><td>Optional</td><td>String (255)</td><td></td><td>Incluir numero de cliente frecuente</td></tr>
-<tr><td>CSMDD16</td><td>Optional</td><td>String (255)</td><td></td><td>Incluir numero de cupon de descuento</td></tr>
-<tr><td>CSMDD35</td><td>Conditional (Transaccion con Visa)</td><td>String (255)</td><td></td><td>Tipo de documento solicitado por el comercio al cliente</td></tr>
-<tr><td>CSMDD36</td><td>Conditional (Transaccion con Visa)</td><td>String (255)</td><td></td><td>Numero de documento solicitado por el comercio al cliente</td></tr>
-<tr><td>CSMDD37</td><td>Conditional (Transaccion con Visa)</td><td>String (255)</td><td></td><td>Numero de puerta</td></tr>
-<tr><td> CSMDD38</td><td>onditional (Transaccion con Visa)</td><td>String (255)</td><td></td><td>Fecha de nacimiento del comprador, dato solicitado por el comercio. DECIDIR tiene el formato exacto de como se debe de capturar</td></tr>
-<tr><td>CSMDD39</td><td>Conditional (Transaccion con Visa)</td><td>String (255)</td><td></td><td>Valor numero correspondiente a la validacion de cada uno de los datos anteriores ejemplo: 1012</td></tr>
-<tr><td> CSMDD40</td><td>Optional</td><td>String(1)</td><td></td><td>"Valor para identificar si la transaccion ha sido reportada como fraude por parte del emisor. Incluir el parametro con valor = S Este parametro lo genera decidir a partir de la respuesta del emisor. En caso de una transaccion aceptada por el emisor o con rechazo diferente a fraude, NO INCLUIR"</td></tr> 
-<tr><td>CSMDD41</td><td>Optional</td><td>String(1)</td><td></td><td>Datos proporcionado por DECIDIR en el form. De pago. Valores posibles S/N</td></tr> 
-<tr><td>CSMDD42</td><td>Optional</td><td>String(1)</td><td></td><td>Datos proporcionado por DECIDIR en el form. De pago. Valores posibles S/N</td></tr>
-<tr><td>CSMDD80</td><td>Required </td><td>Integer (20)</td><td></td><td>Número de cuenta del vendedor</td></tr>
-<tr><td> CSMDD81</td><td>Required </td><td>String(255)</td><td></td><td>Mail del vendedor en TP</td></tr>
-<tr><td> CSMDD82</td><td>Required </td><td>Integer (6)</td><td></td><td>Rubro asignado por el analista de riesgos de Back Office</td></tr>
-<tr><td>CSMDD83</td><td>Required </td><td>Integer (2)</td><td></td><td>Antigüedad de la cuenta vendedor</td></tr> 
-<tr><td>CSMDD84</td><td>Required </td><td>String (15)</td><td></td><td>Consumidor Final / Profesional / Empresa</td></tr> 
-<tr><td>CSMDD85</td><td>Required </td><td>Integer(1)</td><td></td><td>0 (No se le pidió) / 1 (Se le pidió y se validó) / 2 (Uso Futuro)</td></tr>
-<tr><td> CSMDD86</td><td>Requerido (para Billetera)</td><td>Integer(20)</td><td></td><td>Número de cuenta del comprador</td></tr>
-<tr><td>CSMDD87</td><td>Requerido (para Billetera)</td><td>Integer (3)</td><td></td><td>Antigüedad de la cuenta comprador (Meses)</td></tr> 
-<tr><td>CSMDD88</td><td>Requerido (para Billetera)</td><td>Integer (3)</td><td></td><td>Cantidad de tarjetas Habilitadas de la Billetera</td></tr> 
-<tr><td>CSMDD89</td><td>Requerido (para Billetera)</td><td>Integer (2)</td><td></td><td>Nivel de Riesgo asignado al Medio de Pago que Utiliza</td></tr>
-</table>
-
-[<sub>Volver a inicio</sub>](#inicio)
-<br>
 
 <a name="caracteristicas"></a>
 ## Características
 
 <a name="status"></a>
-####Status de la Operación
+#### Status de la Operación
 
 <table>
   <tr>
@@ -571,7 +907,7 @@ optionsSAR_operacion={
 La SDK cuenta con un método para consultar el status de la transacción desde la misma SDK. El método se utiliza de la siguiente manera:
 ```python
 optionsGS = {
-'MERCHANT': merchant, #merchant es una variable que contiene al id site 
+'MERCHANT': merchant, #merchant es una variable que contiene al id site
 'OPERATIONID': operationid # operationid es un variable (id de la operacion a consultar)
 }
 print tpc.getByoperationId(optionsGS)
@@ -617,7 +953,7 @@ El siguiente método retornará el status actual de la transacción en Todopago.
   <tr>
     <td><b>CURRENCYCODE</b></td>
     <td>Sí</td>
-    <td>Códiog de moneda utilizado en la transacción. Por el momento solo 32 (Pesos</td>
+    <td>Código de moneda utilizado en la transacción. Por el momento solo 32 (Pesos)</td>
     <td>Numérico/td>
     <td>32</td>
   </tr>
@@ -636,7 +972,7 @@ Usando el punto como separador de decimales. No se permiten comas, ni como separ
     <td>Numérico con 9 dígitos con hasta 2 decimales 999999[.CC]
 Usando el punto como separador de decimales. No se permiten comas, ni como separador de miles ni como separador de decimales.</td>
     <td>$125,38 -> 125.38 <br />$12 -> 12.00</td>
-  </tr>  
+  </tr>
   <tr>
     <td><b>TYPE</b></td>
     <td>Sí</td>
@@ -697,21 +1033,21 @@ Usando el punto como separador de decimales. No se permiten comas, ni como separ
 
 <ins><strong>Ejemplo de Respuesta</strong></ins>
 ```python
-  '{Operations': 
+  '{Operations':
    		{
       'RESULTCODE' :  '999'
       'RESULTMESSAGE' :  'RECHAZADA'
-      'DATETIME' :  '2015-05-13T14:11:38.287+00:00' 
-      'OPERATIONID' :  '01' 
-      'CURRENCYCODE' :  '32' 
+      'DATETIME' :  '2015-05-13T14:11:38.287+00:00'
+      'OPERATIONID' :  '01'
+      'CURRENCYCODE' :  '32'
       'AMOUNT' :  54
-      'TYPE':  'compra_online' 
+      'TYPE':  'compra_online'
       'INSTALLMENTPAYMENTS' :  '4'
-      'CUSTOMEREMAIL' :  'cosme@fulanito.com' 
+      'CUSTOMEREMAIL' :  'cosme@fulanito.com'
       'IDENTIFICATIONTYPE' :  'DNI'
-      'IDENTIFICATION' :  '1212121212' 
-      'CARDNUMBER' :  '12121212XXXXXX1212' 
-      'CARDHOLDERNAME' :  'Cosme Fulanito' 
+      'IDENTIFICATION' :  '1212121212'
+      'CARDNUMBER' :  '12121212XXXXXX1212'
+      'CARDHOLDERNAME' :  'Cosme Fulanito'
       'TICKETNUMBER' :  0
       'AUTHORIZATIONCODE' : null
       'BARCODE' : null
@@ -721,11 +1057,11 @@ Usando el punto como separador de decimales. No se permiten comas, ni como separ
       }
 ```
 
-Además, se puede conocer el estado de las transacciones a través del portal [www.todopago.com.ar](http://www.todopago.com.ar/). Desde el portal se verán los estados "Aprobada" y "Rechazada". Si el método de pago elegido por el comprador fue Pago Fácil o RapiPago, se podrán ver en estado "Pendiente" hasta que el mismo sea pagado.
-	
+Además, se puede conocer el estado de las transacciones a través del portal [www.todopago.com.ar](http://www.todopago.com.ar/). Allí se verán los estados "Aprobada" y "Rechazada". Si el método de pago elegido por el comprador fue Pago Fácil o RapiPago, se podrán ver en estado "Pendiente" hasta que el mismo sea pagado.
+
 
 <a name="statusdate"></a>
-####Consulta de operaciones por rango de tiempo
+#### Consulta de operaciones por rango de tiempo
 En este caso hay que llamar a getByRangeDateTime() y devolvera todas las operaciones realizadas en el rango de fechas dado
 
 ```python
@@ -737,7 +1073,7 @@ optionsGBRDT = {
 response = tpc.getByRangeDateTime(optionsGBRDT)
 ```
 <a name="devolucion"></a>
-####Devolución
+#### Devolución
 
 La SDK dispone de métodos para realizar la devolución, de una transacción realizada a traves de TodoPago.
 
@@ -753,22 +1089,22 @@ AuthorizationKey | No*        | AuthorizationKey devuelto como respuesta del ser
 
 ```python
 options = {
-"Security" : "837BE68A892F06C17B944F344AEE8F5F", #API Key del comercio asignada por TodoPago 
+"Security" : "837BE68A892F06C17B944F344AEE8F5F", #API Key del comercio asignada por TodoPago
 "Merchant" : "35", #Merchant o Nro de comercio asignado por TodoPago
 "RequestKey" : "6d2589f2-37e6-1334-7565-3dc19404480c" #RequestKey devuelto como respuesta del servicio SendAutorizeRequest
 }
-resp = tpc.voidRequest(options)	
+resp = tpc.voidRequest(options)
 ```
 
 También se puede llamar al método ```voidRequest``` de la esta otra manera:
 ```python
 
 options = {
-"Security" : "837BE68A892F06C17B944F344AEE8F5F", #API Key del comercio asignada por TodoPago 
+"Security" : "837BE68A892F06C17B944F344AEE8F5F", #API Key del comercio asignada por TodoPago
 "Merchant" : "35", #Merchant o Nro de comercio asignado por TodoPago
 "AuthorizationKey" : "6d2589f2-37e6-1334-7565-3dc19404480c" #AuthorizationKey devuelto como respuesta del servicio GetAuthorizeAnswer
 }
-resp = tpc.voidRequest(options)	
+resp = tpc.voidRequest(options)
 ```
 
 **Respuesta del servicio:**
@@ -786,12 +1122,8 @@ StatusMessage | Sí          |Resultado de la devolución                       
 	"StatusMessage" : "Operación realizada correctamente"
 }
 ```
-<br>
-
-
-
 <a name="devolucionparcial"></a>
-####Devolución parcial
+#### Devolución parcial
 
 La SDK dispone de métodos para realizar la devolución parcial, de una transacción realizada a traves de TodoPago.
 
@@ -808,7 +1140,7 @@ AMOUNT           | No         | Monto a devolver, si no se envía, se trata de u
 ```python
 
 options = {
-"Security" : "837BE68A892F06C17B944F344AEE8F5F", #API Key del comercio asignada por TodoPago 
+"Security" : "837BE68A892F06C17B944F344AEE8F5F", #API Key del comercio asignada por TodoPago
 "Merchant" : "35", #Merchant o Nro de comercio asignado por TodoPago
 "RequestKey" : "6d2589f2-37e6-1334-7565-3dc19404480c" #RequestKey devuelto como respuesta del servicio SendAutorizeRequest
 "AMOUNT" : "23.50" #Opcional. Monto a devolver, si no se envía, se trata de una devolución total
@@ -820,12 +1152,12 @@ También se puede llamar al método ```returnRequest``` de la esta otra manera:
 ```python
 
 options = {
-"Security" : "837BE68A892F06C17B944F344AEE8F5F", #API Key del comercio asignada por TodoPago 
+"Security" : "837BE68A892F06C17B944F344AEE8F5F", #API Key del comercio asignada por TodoPago
 "Merchant" : "35", #Merchant o Nro de comercio asignado por TodoPago
 "AuthorizationKey" : "6d2589f2-37e6-1334-7565-3dc19404480c" #AuthorizationKey devuelto como respuesta del servicio GetAuthorizeAnswer
 "AMOUNT" : "23.50" #Opcional. Monto a devolver, si no se envía, se trata de una devolución total
 }
-resp = tpc.returnRequest(options)	
+resp = tpc.returnRequest(options)
 ```
 
 **Respuesta de servicio:**
@@ -845,12 +1177,13 @@ Si la operación fue realizada correctamente se informará con un código 2011 y
 	"StatusMessage" => "Operación realizada correctamente",
 }
 ```
-<br>
-<a name="formhidrido"></a>
-####Formulario hibrido
+
+<a name="formhibrido"></a>
+
+#### Formulario hibrido
 
 **Conceptos basicos**<br>
-El formulario hibrido, es una alternativa al medio de pago actual por redirección al formulario externo de TodoPago.<br> 
+El formulario hibrido, es una alternativa al medio de pago actual por redirección al formulario externo de TodoPago.<br>
 Con el mismo, se busca que el comercio pueda adecuar el look and feel del formulario a su propio diseño.
 
 **Libreria**<br>
@@ -944,7 +1277,7 @@ El formulario define callbacks javascript, que son llamados según el estado y l
 + customPaymentErrorResponse: Si hubo algun error durante el proceso de pago, este devuelve el response con el codigo y mensaje correspondiente.
 
 ** Boton Pagar con Billetera **
-En el formulario aparecera la posibilidad de utilizar la billetera virtual de todopago 
+En el formulario aparecera la posibilidad de utilizar la billetera virtual de todopago
 en un boton que se llama "Boton Pagar con Billetera"
 
 **Ejemplo de Implementación**:
@@ -954,9 +1287,9 @@ en un boton que se llama "Boton Pagar con Billetera"
 [<sub>Volver a inicio</sub>](#inicio)
 
 <a name="credenciales"></a>
-####Obtener credenciales
+#### Obtener credenciales
 El SDK permite obtener las credenciales "Authentification", "MerchandId" y "Security" de la cuenta de Todo Pago, ingresando el usuario y contraseña.<br>
-Esta funcionalidad es util para obtener los parametros de configuracion dentro de la implementacion.
+Esta funcionalidad es útil para obtener los parámetros de configuración dentro de la implementación.
 
 - Crear una instancia de la clase User:
 ```python
@@ -969,59 +1302,87 @@ tpc = TodoPagoConnector(j_header_http, "test")
 
 #usario de TodoPago
 datosUsuario = {
-	'USUARIO' : "usuario@todopago.com.ar", 
+	'USUARIO' : "usuario@todopago.com.ar",
 	'CLAVE' : "contraseña"
 }
 
-#este metodo devuelve un json con las credenciales
+#este método devuelve un json con las credenciales
 tpc.getCredentials(userCredenciales);
 
 ```
-**Observación**: El Security se obtiene a partir de apiKey, eliminando TODOPAGO de este ultimo.
+**Observación**: El Security se obtiene a partir de apiKey, eliminando TODOPAGO de este último.
+
+[<sub>Volver a inicio</sub>](#inicio)
+<br>
+
+<a name="tiempovida"></a>
+#### Tiempo de vida del formulario
+El SDK permite enviar el parametro "TIMEOUT" para setear el tiempo de duracion que el formulario mantiene la sesion de la compra.
+El Parametro se envia en el payload del SAR y es opcional, este admite valores en milisegundos entre un rango de tiempo de 300000 (5 minutos) y 21600000 (6hs) como se muestra a continuación.
+
+```python
+
+#parametros de payload
+optionsSAR_operacion = {
+  "MERCHANT": "2153",
+  "OPERATIONID": "06",
+  "CURRENCYCODE": "032",
+  "AMOUNT": "3",
+  "MININSTALLMENTS": "3",
+  "MAXINSTALLMENTS": "6",
+  "TIMEOUT": "300000",
+  "CSBTCITY": "Villa General Belgrano",
+  "CSSTCITY": "Villa General Belgrano",
+  "CSMDD6" : "",
+  "CSBTCOUNTRY": "AR",
+  "CSSTCOUNTRY": "AR",
+  .......
+}
+
+```
 
 [<sub>Volver a inicio</sub>](#inicio)
 <br>
 
 <a name="tablareferencia"></a>    
-## Tablas de Referencia   
-######[Provincias](#p)    
+## Tablas de Referencia    
 				
 <p>Solo utilizado para incluir los datos de control de fraude</p>
-<table>		
-<tr><th>Provincia</th><th>Código</th></tr>		
-<tr><td>CABA</td><td>C</td></tr>		
-<tr><td>Buenos Aires</td><td>B</td></tr>		
-<tr><td>Catamarca</td><td>K</td></tr>		
-<tr><td>Chaco</td><td>H</td></tr>		
-<tr><td>Chubut</td><td>U</td></tr>		
-<tr><td>Córdoba</td><td>X</td></tr>		
-<tr><td>Corrientes</td><td>W</td></tr>		
-<tr><td>Entre Ríos</td><td>E</td></tr>		
-<tr><td>Formosa</td><td>P</td></tr>		
-<tr><td>Jujuy</td><td>Y</td></tr>		
-<tr><td>La Pampa</td><td>L</td></tr>		
-<tr><td>La Rioja</td><td>F</td></tr>		
-<tr><td>Mendoza</td><td>M</td></tr>		
-<tr><td>Misiones</td><td>N</td></tr>		
-<tr><td>Neuquén</td><td>Q</td></tr>		
-<tr><td>Río Negro</td><td>R</td></tr>		
-<tr><td>Salta</td><td>A</td></tr>		
-<tr><td>San Juan</td><td>J</td></tr>		
-<tr><td>San Luis</td><td>D</td></tr>		
-<tr><td>Santa Cruz</td><td>Z</td></tr>		
-<tr><td>Santa Fe</td><td>S</td></tr>		
-<tr><td>Santiago del Estero</td><td>G</td></tr>		
-<tr><td>Tierra del Fuego</td><td>V</td></tr>		
-<tr><td>Tucumán</td><td>T</td></tr>		
+<table>
+<tr><th>Provincia</th><th>Código</th></tr>
+<tr><td>CABA</td><td>C</td></tr>
+<tr><td>Buenos Aires</td><td>B</td></tr>
+<tr><td>Catamarca</td><td>K</td></tr>
+<tr><td>Chaco</td><td>H</td></tr>
+<tr><td>Chubut</td><td>U</td></tr>
+<tr><td>Córdoba</td><td>X</td></tr>
+<tr><td>Corrientes</td><td>W</td></tr>
+<tr><td>Entre Ríos</td><td>E</td></tr>
+<tr><td>Formosa</td><td>P</td></tr>
+<tr><td>Jujuy</td><td>Y</td></tr>
+<tr><td>La Pampa</td><td>L</td></tr>
+<tr><td>La Rioja</td><td>F</td></tr>
+<tr><td>Mendoza</td><td>M</td></tr>
+<tr><td>Misiones</td><td>N</td></tr>
+<tr><td>Neuquén</td><td>Q</td></tr>
+<tr><td>Río Negro</td><td>R</td></tr>
+<tr><td>Salta</td><td>A</td></tr>
+<tr><td>San Juan</td><td>J</td></tr>
+<tr><td>San Luis</td><td>D</td></tr>
+<tr><td>Santa Cruz</td><td>Z</td></tr>
+<tr><td>Santa Fe</td><td>S</td></tr>
+<tr><td>Santiago del Estero</td><td>G</td></tr>
+<tr><td>Tierra del Fuego</td><td>V</td></tr>
+<tr><td>Tucumán</td><td>T</td></tr>
 </table>
 
 [<sub>Volver a inicio</sub>](#inicio)
 
-<a name="codigoerrores"></a>    
-## Tabla de errores     
+<a name="codigoerrores"></a>
+## Tabla de errores operativos
 
-<table>		
-<tr><th>Id mensaje</th><th>Mensaje</th></tr>				
+<table>
+<tr><th>Id mensaje</th><th>Mensaje</th></tr>
 <tr><td>-1</td><td>Aprobada.</td></tr>
 <tr><td>1081</td><td>Tu saldo es insuficiente para realizar la transacción.</td></tr>
 <tr><td>1100</td><td>El monto ingresado es menor al mínimo permitido</td></tr>
@@ -1048,7 +1409,6 @@ tpc.getCredentials(userCredenciales);
 <tr><td>99903</td><td>Lo sentimos, hubo un error al procesar la operación. Por favor reintentá más tarde.</td></tr>
 <tr><td>99970</td><td>Lo sentimos, no pudimos procesar la operación. Por favor reintentá más tarde.</td></tr>
 <tr><td>99971</td><td>Lo sentimos, no pudimos procesar la operación. Por favor reintentá más tarde.</td></tr>
-<tr><td>99977</td><td>Lo sentimos, no pudimos procesar la operación. Por favor reintentá más tarde.</td></tr>
 <tr><td>99978</td><td>Lo sentimos, no pudimos procesar la operación. Por favor reintentá más tarde.</td></tr>
 <tr><td>99979</td><td>Lo sentimos, el pago no pudo ser procesado.</td></tr>
 <tr><td>99980</td><td>Ya realizaste un pago en este sitio por el mismo importe. Si querés realizarlo nuevamente esperá 5 minutos.</td></tr>
@@ -1070,6 +1430,103 @@ tpc.getCredentials(userCredenciales);
 <tr><td>99997</td><td>Lo sentimos, en este momento la operación no puede ser realizada. Por favor intentá más tarde.</td></tr>
 <tr><td>99998</td><td>Lo sentimos, la operación fue rechazada. Comunicate con la entidad emisora de la tarjeta para verificar el incoveniente o seleccioná otro medio de pago.</td></tr>
 <tr><td>99999</td><td>Lo sentimos, la operación no pudo completarse. Comunicate con la entidad emisora de la tarjeta para verificar el incoveniente o seleccioná otro medio de pago.</td></tr>
+</table>
+
+[<sub>Volver a inicio</sub>](#inicio)
+
+<a name="interrores"></a>
+## Tabla de errores de integración
+
+<table>
+<tr><td>**Id mensaje**</td><td>**Descripción**</td></tr>
+<tr><td>99977</td><td>Transaccion denegada por validador de TP</td></tr>
+<tr><td>98001 </td><td>ERROR: El campo CSBTCITY es requerido</td></tr>
+<tr><td>98002 </td><td>ERROR: El campo CSBTCOUNTRY es requerido</td></tr>
+<tr><td>98003 </td><td>ERROR: El campo CSBTCUSTOMERID es requerido</td></tr>
+<tr><td>98004 </td><td>ERROR: El campo CSBTIPADDRESS es requerido</td></tr>
+<tr><td>98005 </td><td>ERROR: El campo CSBTEMAIL es requerido</td></tr>
+<tr><td>98006 </td><td>ERROR: El campo CSBTFIRSTNAME es requerido</td></tr>
+<tr><td>98007 </td><td>ERROR: El campo CSBTLASTNAME es requerido</td></tr>
+<tr><td>98008 </td><td>ERROR: El campo CSBTPHONENUMBER es requerido</td></tr>
+<tr><td>98009 </td><td>ERROR: El campo CSBTPOSTALCODE es requerido</td></tr>
+<tr><td>98010 </td><td>ERROR: El campo CSBTSTATE es requerido</td></tr>
+<tr><td>98011 </td><td>ERROR: El campo CSBTSTREET1 es requerido</td></tr>
+<tr><td>98012 </td><td>ERROR: El campo CSBTSTREET2 es requerido</td></tr>
+<tr><td>98013 </td><td>ERROR: El campo CSPTCURRENCY es requerido</td></tr>
+<tr><td>98014 </td><td>ERROR: El campo CSPTGRANDTOTALAMOUNT es requerido</td></tr>
+<tr><td>98015 </td><td>ERROR: El campo CSMDD7 es requerido</td></tr>
+<tr><td>98016 </td><td>ERROR: El campo CSMDD8 es requerido</td></tr>
+<tr><td>98017 </td><td>ERROR: El campo CSMDD9 es requerido</td></tr>
+<tr><td>98018 </td><td>ERROR: El campo CSMDD10 es requerido</td></tr>
+<tr><td>98019 </td><td>ERROR: El campo CSMDD11 es requerido</td></tr>
+<tr><td>98020 </td><td>ERROR: El campo CSSTCITY es requerido</td></tr>
+<tr><td>98021 </td><td>ERROR: El campo CSSTCOUNTRY es requerido</td></tr>
+<tr><td>98022 </td><td>ERROR: El campo CSSTEMAIL es requerido</td></tr>
+<tr><td>98023 </td><td>ERROR: El campo CSSTFIRSTNAME es requerido</td></tr>
+<tr><td>98024 </td><td>ERROR: El campo CSSTLASTNAME es requerido</td></tr>
+<tr><td>98025 </td><td>ERROR: El campo CSSTPHONENUMBER es requerido</td></tr>
+<tr><td>98026 </td><td>ERROR: El campo CSSTPOSTALCODE es requerido</td></tr>
+<tr><td>98027 </td><td>ERROR: El campo CSSTSTATE es requerido</td></tr>
+<tr><td>98028 </td><td>ERROR: El campo CSSTSTREET1 es requerido</td></tr>
+<tr><td>98029 </td><td>ERROR: El campo CSMDD12 es requerido</td></tr>
+<tr><td>98030 </td><td>ERROR: El campo CSMDD13 es requerido</td></tr>
+<tr><td>98031 </td><td>ERROR: El campo CSMDD14 es requerido</td></tr>
+<tr><td>98032 </td><td>ERROR: El campo CSMDD15 es requerido</td></tr>
+<tr><td>98033 </td><td>ERROR: El campo CSMDD16 es requerido</td></tr>
+<tr><td>98034 </td><td>ERROR: El campo CSITPRODUCTCODE es requerido</td></tr>
+<tr><td>98035 </td><td>ERROR: El campo CSITPRODUCTDESCRIPTION es requerido</td></tr>
+<tr><td>98036 </td><td>ERROR: El campo CSITPRODUCTNAME es requerido</td></tr>
+<tr><td>98037 </td><td>ERROR: El campo CSITPRODUCTSKU es requerido</td></tr>
+<tr><td>98038 </td><td>ERROR: El campo CSITTOTALAMOUNT es requerido</td></tr>
+<tr><td>98039 </td><td>ERROR: El campo CSITQUANTITY es requerido</td></tr>
+<tr><td>98040 </td><td>ERROR: El campo CSITUNITPRICE es requerido</td></tr>
+<tr><td>98101 </td><td>ERROR: El formato del campo CSBTCITY es incorrecto</td></tr>
+<tr><td>98102 </td><td>ERROR: El formato del campo CSBTCOUNTRY es incorrecto</td></tr>
+<tr><td>98103 </td><td>ERROR: El formato del campo CSBTCUSTOMERID es incorrecto</td></tr>
+<tr><td>98104 </td><td>ERROR: El formato del campo CSBTIPADDRESS es incorrecto</td></tr>
+<tr><td>98105 </td><td>ERROR: El formato del campo CSBTEMAIL es incorrecto</td></tr>
+<tr><td>98106 </td><td>ERROR: El formato del campo CSBTFIRSTNAME es incorrecto</td></tr>
+<tr><td>98107 </td><td>ERROR: El formato del campo CSBTLASTNAME es incorrecto</td></tr>
+<tr><td>98108 </td><td>ERROR: El formato del campo CSBTPHONENUMBER es incorrecto</td></tr>
+<tr><td>98109 </td><td>ERROR: El formato del campo CSBTPOSTALCODE es incorrecto</td></tr>
+<tr><td>98110 </td><td>ERROR: El formato del campo CSBTSTATE es incorrecto</td></tr>
+<tr><td>98111 </td><td>ERROR: El formato del campo CSBTSTREET1 es incorrecto</td></tr>
+<tr><td>98112 </td><td>ERROR: El formato del campo CSBTSTREET2 es incorrecto</td></tr>
+<tr><td>98113 </td><td>ERROR: El formato del campo CSPTCURRENCY es incorrecto</td></tr>
+<tr><td>98114 </td><td>ERROR: El formato del campo CSPTGRANDTOTALAMOUNT es incorrecto</td></tr>
+<tr><td>98115 </td><td>ERROR: El formato del campo CSMDD7 es incorrecto</td></tr>
+<tr><td>98116 </td><td>ERROR: El formato del campo CSMDD8 es incorrecto</td></tr>
+<tr><td>98117 </td><td>ERROR: El formato del campo CSMDD9 es incorrecto</td></tr>
+<tr><td>98118 </td><td>ERROR: El formato del campo CSMDD10 es incorrecto</td></tr>
+<tr><td>98119 </td><td>ERROR: El formato del campo CSMDD11 es incorrecto</td></tr>
+<tr><td>98120 </td><td>ERROR: El formato del campo CSSTCITY es incorrecto</td></tr>
+<tr><td>98121 </td><td>ERROR: El formato del campo CSSTCOUNTRY es incorrecto</td></tr>
+<tr><td>98122 </td><td>ERROR: El formato del campo CSSTEMAIL es incorrecto</td></tr>
+<tr><td>98123 </td><td>ERROR: El formato del campo CSSTFIRSTNAME es incorrecto</td></tr>
+<tr><td>98124 </td><td>ERROR: El formato del campo CSSTLASTNAME es incorrecto</td></tr>
+<tr><td>98125 </td><td>ERROR: El formato del campo CSSTPHONENUMBER es incorrecto</td></tr>
+<tr><td>98126 </td><td>ERROR: El formato del campo CSSTPOSTALCODE es incorrecto</td></tr>
+<tr><td>98127 </td><td>ERROR: El formato del campo CSSTSTATE es incorrecto</td></tr>
+<tr><td>98128 </td><td>ERROR: El formato del campo CSSTSTREET1 es incorrecto</td></tr>
+<tr><td>98129 </td><td>ERROR: El formato del campo CSMDD12 es incorrecto</td></tr>
+<tr><td>98130 </td><td>ERROR: El formato del campo CSMDD13 es incorrecto</td></tr>
+<tr><td>98131 </td><td>ERROR: El formato del campo CSMDD14 es incorrecto</td></tr>
+<tr><td>98132 </td><td>ERROR: El formato del campo CSMDD15 es incorrecto</td></tr>
+<tr><td>98133 </td><td>ERROR: El formato del campo CSMDD16 es incorrecto</td></tr>
+<tr><td>98134 </td><td>ERROR: El formato del campo CSITPRODUCTCODE es incorrecto</td></tr>
+<tr><td>98135 </td><td>ERROR: El formato del campo CSITPRODUCTDESCRIPTION es incorrecto</td></tr>
+<tr><td>98136 </td><td>ERROR: El formato del campo CSITPRODUCTNAME es incorrecto</td></tr>
+<tr><td>98137 </td><td>ERROR: El formato del campo CSITPRODUCTSKU es incorrecto</td></tr>
+<tr><td>98138 </td><td>ERROR: El formato del campo CSITTOTALAMOUNT es incorrecto</td></tr>
+<tr><td>98139 </td><td>ERROR: El formato del campo CSITQUANTITY es incorrecto</td></tr>
+<tr><td>98140 </td><td>ERROR: El formato del campo CSITUNITPRICE es incorrecto</td></tr>
+<tr><td>98201 </td><td>ERROR: Existen errores en la información de los productos</td></tr>
+<tr><td>98202 </td><td>ERROR: Existen errores en la información de CSITPRODUCTDESCRIPTION los productos</td></tr>
+<tr><td>98203 </td><td>ERROR: Existen errores en la información de CSITPRODUCTNAME los productos</td></tr>
+<tr><td>98204 </td><td>ERROR: Existen errores en la información de CSITPRODUCTSKU los productos</td></tr>
+<tr><td>98205 </td><td>ERROR: Existen errores en la información de CSITTOTALAMOUNT los productos</td></tr>
+<tr><td>98206 </td><td>ERROR: Existen errores en la información de CSITQUANTITY los productos</td></tr>
+<tr><td>98207 </td><td>ERROR: Existen errores en la información de CSITUNITPRICE de los productos</td></tr>
 </table>
 
 [<sub>Volver a inicio</sub>](#inicio)

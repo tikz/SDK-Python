@@ -12,9 +12,6 @@ if sys.version_info[0] >= 3 :
 else:
 	import urllib	
 
-import ssl
-
-ssl._create_default_https_context = ssl._create_unverified_context
 
 def deprecated(func):
 	"""This is a decorator which can be used to mark functions
@@ -31,7 +28,8 @@ def deprecated(func):
 	return newFunc
 
 
-ver= '1.6.0'
+
+ver= '1.7.0'
 soapAppend = 'services/'
 restAppend = 'api/'
 tenant = 't/1.1/'
@@ -125,6 +123,12 @@ class TodoPagoConnector:
 	def getAllPaymentMethods(self, optionsGAPM):
 		return self._do_rest("PaymentMethods/Get", optionsGAPM, keys_order_GAPM)
 
+	################################################################
+	###Methodo publico que descubre todas los medios de pago     ###
+	################################################################
+	def discoverPaymentMethods(self):
+		return self._do_rest("PaymentMethods/Discover", None, {})
+
 
 	################################################################
 	###Methodo publico que devuelve el estado de una transaccion####
@@ -154,7 +158,7 @@ class TodoPagoConnector:
 	###Methodo publico que devuelve las creddenciales###############
 	################################################################
 	def getCredentials(self, user):
-		return self._parse_rest_response(requests.post(self._end_point_rest_root+'Credentials', data = json.dumps(user), headers={'Content-Type' : 'application/json'}))
+		return self._parse_rest_response(requests.post(self._end_point_rest_root+'Credentials', data = json.dumps(user), headers={'Content-Type' : 'application/json'}, verify=False))
 
 	########################
 	###Metodos privados ####
@@ -204,7 +208,8 @@ class TodoPagoConnector:
 		self.cliente =  Client(self._get_wsdl_url(operacion), #se tiene que extraer de un array
 			location=self._end_point+operacion, #se tiene que aprmar segun la funcion
 			headers=self._http_header,
-			cache=None)
+			cache=None,
+			nosend=False)
 
 
 	def _client_soap_header(self, data):
@@ -262,7 +267,7 @@ class TodoPagoConnector:
 		#print(self._http_header)
 		headers_aux = copy.deepcopy(self._http_header)
 		headers_aux['Accept'] = 'application/json'
-		
-		response = requests.get(url, headers=headers_aux)
+
+		response = requests.get(url, headers=headers_aux, verify=False)
 
 		return self._parse_rest_response(response)

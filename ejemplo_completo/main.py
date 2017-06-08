@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from bottle import Bottle, run, route, install, template, static_file, response, request
+from bottle import Bottle, run, route, install, template, static_file, response, request, redirect
 import sqlite3, datetime, json, os, sys, urllib, warnings, sys, string
 from random import randint
 #reload(sys)
@@ -11,8 +11,12 @@ sys.path = ['../lib'] + sys.path
 print(sys.path)
 from todopagoconnector import TodoPagoConnector
 
-
 app = Bottle()
+@app.route('/')
+def index():
+	redirect("/login_form")
+
+
 @app.route('/login_form')
 def login_form():
 	output = template('login_form')

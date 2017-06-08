@@ -2,6 +2,9 @@
 import os.path, sys, warnings
 import json
 from todopagoconnector import TodoPagoConnector
+import sys    # sys.setdefaultencoding is cancelled by site.py
+reload(sys)    # to re-enable sys.setdefaultencoding()
+sys.setdefaultencoding('utf-8')
 #import urllib para version 2 o 3
 if sys.version_info[0] >= 3 :
 	from urllib.parse import urlparse
@@ -36,6 +39,7 @@ optionsSAR_operacion = {
 	"AMOUNT": "3",
 	"MININSTALLMENTS": "3",
 	"MAXINSTALLMENTS": "6",
+	"TIMEOUT": "300000",
 	"CSBTCITY": "Villa General Belgrano",
 	"CSSTCITY": "Villa General Belgrano",
 	"CSMDD6" : "",
@@ -120,7 +124,7 @@ print('--------------------- GAA RESPONSE ---------------------')
 #Datos de comercio
 optionsAnswer = {
 	"Security": "f3d8b72c94ab4a06be2ef7c95490f7d3",
-	"merchant": "2153",
+	"Merchant": "2153",
 	"RequestKey": "a2fc7d9e-7c7d-8a55-5322-cecb593160d3",
 	"AnswerKey": "2ac51ee1-1e34-19aa-61bc-3c80407fbbc3"
 }
@@ -141,6 +145,11 @@ resultGetOperationById = tpc.getAllPaymentMethods(optionsPaymentMethods)
 
 print(resultGetOperationById)
 
+print('--------------------- DISCOVER PAYMENT METHODS ---------------------')
+
+resultGetOperationById = tpc.discoverPaymentMethods()
+
+print(resultGetOperationById)
 
 
 print('--------------------- GETOPERATIONBYID ---------------------')
@@ -202,8 +211,8 @@ print(responseGetByRange)
 print('--------------------- GET CREDENTIALS ---------------------')
 
 UserAccount = {
-    'USUARIO' : "usuario@todopago.com.ar", 
-    'CLAVE' : "contraseña"
+    'USUARIO' : "usuario@gmail.com", 
+    'CLAVE' : "pass123!"
 }
 
 responseGetCredential = tpc.getCredentials(UserAccount)
