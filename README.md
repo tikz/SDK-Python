@@ -5,6 +5,7 @@ Todo Pago - módulo SDK-Python para conexión con gateway de pago
  + [Instalación](#instalacion)
  	+ [Versiones de Python soportadas](#Versionesdepysoportadas)
  	+ [Generalidades](#general)
+ + [Diagrama de secuencia](#secuencia) 
  + [Uso](#uso)		
     + [Inicializar la clase correspondiente al conector (TodoPago\Sdk)](#initconector)
     + [Solicitud de autorización](#solicitudautorizacion)
@@ -13,14 +14,18 @@ Todo Pago - módulo SDK-Python para conexión con gateway de pago
     + [Modo test](#test)
  + [Datos adicionales para prevención de fraude](#datosadicionales) 
     + [Datos de referencia](#datosreferencia) 
+ + [Opciones adicionales](#opcionesadicionales)
+    + [Rango de cuotas](#coutas)
+    + [Filtrado de Medios de pago](#filtromp)
+    + [Tiempo de vida de la transacción](#timeout)
  + [Características](#caracteristicas)
-    + [Status de la operación](#status)
+    + [Estado de la operación](#status)
     + [Consulta de operaciones por rango de tiempo](#statusdate)
+    + [Descubrimiento de Medios de Pago](#discover)
     + [Devolucion](#devolucion)
     + [Devolucion parcial](#devolucionparcial)
     + [Formulario hibrido](#formhidrido)
     + [Obtener Credenciales](#credenciales)
-    + [Tiempo de vida del formulario](#tiempovida)
  + [Diagrama de secuencia](#secuencia)
  + [Tablas de referencia](#tablareferencia)		
  + [Tabla de errores](#codigoerrores)		 
@@ -33,9 +38,9 @@ ej: pip install suds-jurko <-- instalar la dependencia
 #servicio soap-rest
 > pip install suds-jurko
 > pip install requests
-#probrar test unitarios
+#test unitarios
 > pip install unittest
-#probar ejemplo completo
+#ejemplo completo
 > pip install bottle
 ```
 
@@ -49,8 +54,15 @@ Esta versión soporta únicamente pago en moneda nacional argentina (CURRENCYCOD
 Todos los métodos devuelven la respuesta en forma de diccionario.
 [<sub>Volver a inicio</sub>](#inicio)
 
+<a name="secuencia"></a>
+## Diagrama de secuencia
+
+![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/README.img/secuencia-003.jpg)
+
+
 <a name="uso"></a>
 ## Uso
+
 
 <a name="initconector"></a>
 #### Inicializar la clase correspondiente al conector (TodoPagoConnector).
@@ -77,12 +89,8 @@ Para acceder al servicio, los vendedores podrán adherirse en el sitio exclusivo
 
 Una vez adheridos, se creará automáticamente una cuenta virtual, en la cual se acreditarán los fondos provenientes de los cobros realizados con la presente modalidad de pago.
 
-<a name="secuencia"></a>
-## Diagrama de secuencia
-![imagen de configuracion](https://raw.githubusercontent.com/TodoPago/imagenes/master/README.img/secuencia-page-001.jpg)
-
-<br>
 <a name="solicitudautorizacion"></a>
+
 #### Solicitud de autorización
 
 En este caso hay que llamar a sendAuthorizeRequest().
@@ -696,7 +704,7 @@ optionsSAR_operacion={
 ```
 <a name="opcionesadicionales"></a>
 #### Opciones adicionales
-Dentro del parámetro *$optionsSAR_operacion* pueden enviarse opciones adicionales que habilitan características para esa transacción en particular. A continuación se describen las mismas
+Dentro del parámetro *optionsSAR_operacion* pueden enviarse opciones adicionales que habilitan características para esa transacción en particular. A continuación se describen las mismas
 
 <a name="coutas"></a>
 ##### Rango de Cuotas
@@ -726,6 +734,51 @@ Es posible setear el rango de cuotas a mostrar en el formulario entre un mínimo
   </tr>  
 </table>
 
+##### Ejemplo
+
+```python
+
+optionsSAR_operacion={
+.............................
+'MININSTALLMENTS':3,
+'MAXINSTALLMENTS':6,
+.............................
+}
+```
+<a name="filtromp"></a>
+##### Filtrado de Medios de Pago
+Mediante esta funcionalidad es posible filtrar los medios de pago habilitados en el formulario de pago. Se debe pasar en la llamada al servicio SendAuthorizeRequest un parámetro adicional con los ids de los medio de pago que se desean habilitar, los cuales pueden consultarse mediante el método de [Descubrimiento de Medios de Pago](#discover)
+
+<table>
+  <tr>
+    <th>Campo</th>
+    <th>Requerido</th>
+    <th>Descripción</th>
+    <th>Tipo de Dato</th>
+    <th>Valores posibles / Ejemplo</th>
+  </tr>
+  <tr>
+    <td><b>AVAILABLEPAYMENTMETHODSIDS</b></td>
+    <td>No</td>
+    <td>Lista de los ids de medios de pago habilitados separados por #</td>
+    <td>Alfanumérico</td>
+    <td>1#42#500</td>
+  </tr>
+</table>
+
+[<sub>Volver a inicio</sub>](#inicio)
+<br>
+
+##### Ejemplo
+
+```python
+
+optionsSAR_operacion={
+.............................
+'AVAILABLEPAYMENTMETHODSIDS':"1#42#500",
+.............................
+}
+
 <a name="timeout"></a>
 ##### Tiempo de vida de la transacción
 Es posible setear el tiempo máximo disponible para que el cliente complete el pago en el formulario, el valor por defecto es de 30 minutos. El rango posible es de 5 minutos a 6 horas. Los valores deben ser expresados en milisegundos
@@ -746,6 +799,16 @@ Es posible setear el tiempo máximo disponible para que el cliente complete el p
     <td>1800000</td>
   </tr>
 </table>
+
+##### Ejemplo
+
+```python
+
+optionsSAR_operacion={
+.............................
+'TIMEOUT': 10*60*1000,
+.............................
+}
 
 [<sub>Volver a inicio</sub>](#inicio)
 
@@ -878,7 +941,10 @@ Si se pasa mal el <strong>AnswerKey</strong> o el <strong>RequestKey</strong> se
 ## Características
 
 <a name="status"></a>
-#### Status de la Operación
+#### Estado de la Operación
+
+![estado](https://raw.githubusercontent.com/TodoPago/imagenes/master/README.img/secuencia-status.jpg)
+
 
 <table>
   <tr>
@@ -1062,6 +1128,10 @@ Además, se puede conocer el estado de las transacciones a través del portal [w
 
 <a name="statusdate"></a>
 #### Consulta de operaciones por rango de tiempo
+
+![obtener operaciones por rango](https://raw.githubusercontent.com/TodoPago/imagenes/master/README.img/secuencia-getoperations.jpg)
+
+
 En este caso hay que llamar a getByRangeDateTime() y devolvera todas las operaciones realizadas en el rango de fechas dado
 
 ```python
@@ -1072,8 +1142,23 @@ optionsGBRDT = {
 }
 response = tpc.getByRangeDateTime(optionsGBRDT)
 ```
+
+<a name="discover"></a>
+#### Descubrimiento de Medios de Pago
+
+![medios de pago](https://raw.githubusercontent.com/TodoPago/imagenes/master/README.img/secuencia-paymentmethods.jpg)
+
+La SDK cuenta con un método para obtener todos los medios de pago habilitados en TodoPago.
+
+```python
+resultGetOperationById = tpc.discoverPaymentMethods()
+```
+
 <a name="devolucion"></a>
 #### Devolución
+
+![devolucion parcial](https://raw.githubusercontent.com/TodoPago/imagenes/master/README.img/secuencia-devolucion-total.jpg)
+
 
 La SDK dispone de métodos para realizar la devolución, de una transacción realizada a traves de TodoPago.
 
@@ -1125,7 +1210,12 @@ StatusMessage | Sí          |Resultado de la devolución                       
 <a name="devolucionparcial"></a>
 #### Devolución parcial
 
+![devolucion parcial](https://raw.githubusercontent.com/TodoPago/imagenes/master/README.img/secuencia-devolucion-parcial.jpg)
+
+
 La SDK dispone de métodos para realizar la devolución parcial, de una transacción realizada a traves de TodoPago.
+
+_Nota: Para el caso de promociones con costo financiero, se deberá enviar el monto a devolver en base al valor original de la transacción y no del monto finalmente cobrado. TodoPago se encargará de devolver el porcentaje del costo financiero correspondiente a la devolución parcial._
 
 Se debe llamar al método ```returnRequest``` de la siguiente manera:
 
@@ -1167,7 +1257,6 @@ Campo         | Requerido   | Descripción                                      
 StatusCode    | Sí          |Número de identificación del motivo del resultado | Numérico     | 2011
 StatusMessage | Sí          |Resultado de la devolución                        | Alfanumérico | Operación realizada correctamente
 
-Si la operación fue realizada correctamente se informará con un código 2011 y un mensaje indicando el éxito de la operación.
 
 Si la operación fue realizada correctamente se informará con un código 2011 y un mensaje indicando el éxito de la operación.
 
@@ -1287,6 +1376,11 @@ en un boton que se llama "Boton Pagar con Billetera"
 [<sub>Volver a inicio</sub>](#inicio)
 
 <a name="credenciales"></a>
+#### DIagrama de servicio
+
+![credenciales](https://raw.githubusercontent.com/TodoPago/imagenes/master/README.img/secuencia-credenciales.jpg)
+
+
 #### Obtener credenciales
 El SDK permite obtener las credenciales "Authentification", "MerchandId" y "Security" de la cuenta de Todo Pago, ingresando el usuario y contraseña.<br>
 Esta funcionalidad es útil para obtener los parámetros de configuración dentro de la implementación.
@@ -1315,34 +1409,6 @@ tpc.getCredentials(userCredenciales);
 [<sub>Volver a inicio</sub>](#inicio)
 <br>
 
-<a name="tiempovida"></a>
-#### Tiempo de vida del formulario
-El SDK permite enviar el parametro "TIMEOUT" para setear el tiempo de duracion que el formulario mantiene la sesion de la compra.
-El Parametro se envia en el payload del SAR y es opcional, este admite valores en milisegundos entre un rango de tiempo de 300000 (5 minutos) y 21600000 (6hs) como se muestra a continuación.
-
-```python
-
-#parametros de payload
-optionsSAR_operacion = {
-  "MERCHANT": "2153",
-  "OPERATIONID": "06",
-  "CURRENCYCODE": "032",
-  "AMOUNT": "3",
-  "MININSTALLMENTS": "3",
-  "MAXINSTALLMENTS": "6",
-  "TIMEOUT": "300000",
-  "CSBTCITY": "Villa General Belgrano",
-  "CSSTCITY": "Villa General Belgrano",
-  "CSMDD6" : "",
-  "CSBTCOUNTRY": "AR",
-  "CSSTCOUNTRY": "AR",
-  .......
-}
-
-```
-
-[<sub>Volver a inicio</sub>](#inicio)
-<br>
 
 <a name="tablareferencia"></a>    
 ## Tablas de Referencia    
@@ -1383,7 +1449,7 @@ optionsSAR_operacion = {
 
 <table>
 <tr><th>Id mensaje</th><th>Mensaje</th></tr>
-<tr><td>-1</td><td>Aprobada.</td></tr>
+<tr><td>-1</td><td>Tu compra fue exitosa.</td></tr>
 <tr><td>1081</td><td>Tu saldo es insuficiente para realizar la transacción.</td></tr>
 <tr><td>1100</td><td>El monto ingresado es menor al mínimo permitido</td></tr>
 <tr><td>1101</td><td>El monto ingresado supera el máximo permitido.</td></tr>
@@ -1403,16 +1469,21 @@ optionsSAR_operacion = {
 <tr><td>90000</td><td>La cuenta destino de los fondos es inválida. Verificá la información ingresada en Mi Perfil.</td></tr>
 <tr><td>90001</td><td>La cuenta ingresada no pertenece al CUIT/ CUIL registrado.</td></tr>
 <tr><td>90002</td><td>No pudimos validar tu CUIT/CUIL.  Comunicate con nosotros <a href="#contacto" target="_blank">acá</a> para más información.</td></tr>
+<tr><td>99005</td><td>Tu compra no pudo realizarse. Iniciala nuevamente.</td></tr>
 <tr><td>99900</td><td>El pago fue realizado exitosamente</td></tr>
 <tr><td>99901</td><td>No hemos encontrado tarjetas vinculadas a tu Billetera. Podés  adherir medios de pago desde www.todopago.com.ar</td></tr>
 <tr><td>99902</td><td>No se encontro el medio de pago seleccionado</td></tr>
 <tr><td>99903</td><td>Lo sentimos, hubo un error al procesar la operación. Por favor reintentá más tarde.</td></tr>
+<tr><td>99904</td><td>Tu compra no puede ser realizada. Comunicate con tu vendedor.</td></tr>
+<tr><td>99953</td><td>Tu compra no pudo realizarse. Iniciala nuevamente o utilizá otro medio de pago.</td></tr>
+<tr><td>99960</td><td>Esta compra requiere autorización de VISA. Comunicate al número que se encuentra al dorso de tu tarjeta.</td></tr>
+<tr><td>99961</td><td>Esta compra requiere autorización de AMEX. Comunicate al número que se encuentra al dorso de tu tarjeta.</td></tr>
 <tr><td>99970</td><td>Lo sentimos, no pudimos procesar la operación. Por favor reintentá más tarde.</td></tr>
 <tr><td>99971</td><td>Lo sentimos, no pudimos procesar la operación. Por favor reintentá más tarde.</td></tr>
 <tr><td>99978</td><td>Lo sentimos, no pudimos procesar la operación. Por favor reintentá más tarde.</td></tr>
 <tr><td>99979</td><td>Lo sentimos, el pago no pudo ser procesado.</td></tr>
 <tr><td>99980</td><td>Ya realizaste un pago en este sitio por el mismo importe. Si querés realizarlo nuevamente esperá 5 minutos.</td></tr>
-<tr><td>99982</td><td>En este momento la operación no puede ser realizada. Por favor intentá más tarde.</td></tr>
+<tr><td>99982</td><td>Tu compra no pudo ser procesada. Iniciala nuevamente utilizando otro medio de pago.</td></tr>
 <tr><td>99983</td><td>Lo sentimos, el medio de pago no permite la cantidad de cuotas ingresadas. Por favor intentá más tarde.</td></tr>
 <tr><td>99984</td><td>Lo sentimos, el medio de pago seleccionado no opera en cuotas.</td></tr>
 <tr><td>99985</td><td>Lo sentimos, el pago no pudo ser procesado.</td></tr>
@@ -1424,7 +1495,7 @@ optionsSAR_operacion = {
 <tr><td>99991</td><td>Los datos informados son incorrectos. Por favor ingresalos nuevamente.</td></tr>
 <tr><td>99992</td><td>La fecha de vencimiento es incorrecta. Por favor seleccioná otro medio de pago o actualizá los datos.</td></tr>
 <tr><td>99993</td><td>La tarjeta ingresada no está vigente. Por favor seleccioná otra tarjeta o actualizá los datos.</td></tr>
-<tr><td>99994</td><td>El saldo de tu tarjeta no te permite realizar esta operacion.</td></tr>
+<tr><td>99994</td><td>El saldo de tu tarjeta no te permite realizar esta compra. Iniciala nuevamente utilizando otro medio de pago.</td></tr>
 <tr><td>99995</td><td>La tarjeta ingresada es invalida. Seleccioná otra tarjeta para realizar el pago.</td></tr>
 <tr><td>99996</td><td>La operación fué rechazada por el medio de pago porque el monto ingresado es inválido.</td></tr>
 <tr><td>99997</td><td>Lo sentimos, en este momento la operación no puede ser realizada. Por favor intentá más tarde.</td></tr>
@@ -1439,7 +1510,6 @@ optionsSAR_operacion = {
 
 <table>
 <tr><td>**Id mensaje**</td><td>**Descripción**</td></tr>
-<tr><td>99977</td><td>Transaccion denegada por validador de TP</td></tr>
 <tr><td>98001 </td><td>ERROR: El campo CSBTCITY es requerido</td></tr>
 <tr><td>98002 </td><td>ERROR: El campo CSBTCOUNTRY es requerido</td></tr>
 <tr><td>98003 </td><td>ERROR: El campo CSBTCUSTOMERID es requerido</td></tr>

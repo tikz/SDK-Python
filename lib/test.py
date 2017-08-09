@@ -37,9 +37,12 @@ optionsSAR_operacion = {
 	"OPERATIONID": "06",
 	"CURRENCYCODE": "032",
 	"AMOUNT": "3",
+
 	"MININSTALLMENTS": "3",
 	"MAXINSTALLMENTS": "6",
 	"TIMEOUT": "300000",
+	"AVAILABLEPAYMENTMETHODSIDS":"1#42#500",
+
 	"CSBTCITY": "Villa General Belgrano",
 	"CSSTCITY": "Villa General Belgrano",
 	"CSMDD6" : "",
